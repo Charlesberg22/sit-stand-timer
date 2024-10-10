@@ -5,12 +5,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.example.sitstandtimer.ui.StartScreen
+import com.example.sitstandtimer.ui.AlarmScreen
 import com.example.sitstandtimer.ui.TimerViewModel
 
 enum class TimerAppScreen(@StringRes val title: Int) {
@@ -26,10 +26,13 @@ fun TimerApp(
     navController: NavHostController = rememberNavController()
 ) {
     Scaffold { innerPadding ->
-        StartScreen(
-            onStartButtonClicked = {},
-            onSwitchBetweenSitAndStand = {},
-            onSettingsButtonClicked = {},
+        AlarmScreen(
+            onPauseButtonClicked = {},
+            onAcknowledgeClicked = {},
+            onEndButtonClicked = {},
+            isStanding = false,
+            isTimeToScanNfc = false,
+            onBreak = true,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(8.dp)
