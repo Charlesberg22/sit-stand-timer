@@ -29,7 +29,6 @@ fun AlarmScreen(
     isTimeToScanNfc: Boolean,
     modifier: Modifier = Modifier
 ) {
-    val timeToBreak = 30
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
