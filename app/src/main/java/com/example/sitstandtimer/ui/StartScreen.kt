@@ -27,6 +27,7 @@ fun StartScreen(
     onStartButtonClicked: () -> Unit,
     onSwitchBetweenSitAndStand: (Boolean) -> Unit,
     onSettingsButtonClicked: () -> Unit,
+    isStanding: Boolean,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -58,7 +59,7 @@ fun StartScreen(
                 textAlign = TextAlign.Start
             )
             Switch(
-                checked = true,
+                checked = isStanding,
                 onCheckedChange = onSwitchBetweenSitAndStand,
                 modifier = Modifier.weight(1f),
             )
@@ -87,6 +88,7 @@ fun StartScreenPreview() {
             onStartButtonClicked = {},
             onSwitchBetweenSitAndStand = {},
             onSettingsButtonClicked = {},
+            isStanding = true,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(8.dp)

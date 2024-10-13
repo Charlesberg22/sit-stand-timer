@@ -29,7 +29,9 @@ enum class TimerAppScreen(@StringRes val title: Int) {
 
 @Composable
 fun TimerApp(
-    viewModel: TimerViewModel = viewModel(),
+    viewModel: TimerViewModel = viewModel(
+        factory = TimerViewModel.Factory
+    ),
     navController: NavHostController = rememberNavController()
 ) {
     val backStackEntry by navController.currentBackStackEntryAsState()
@@ -51,10 +53,11 @@ fun TimerApp(
                         /*TODO set up timer and viewmodel stuff*/
                         navController.navigate(TimerAppScreen.Timer.name)
                     },
-                    onSwitchBetweenSitAndStand = {},
+                    onSwitchBetweenSitAndStand = {viewModel.setStandingOrSitting()},
                     onSettingsButtonClicked = {
                         navController.navigate(TimerAppScreen.Settings.name)
                     },
+                    isStanding = uiState.isStanding,
                     modifier = Modifier
                         .fillMaxSize()
                 )
