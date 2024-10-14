@@ -18,16 +18,25 @@ class UserPreferenceRepository(
     private companion object {
         val NUMBER_OF_INTERVALS = intPreferencesKey("number_of_intervals")
         val INTERVAL_LENGTH = floatPreferencesKey("interval_length")
+        val BREAK_LENGTH = floatPreferencesKey("break_length")
+        val LUNCH_LENGTH = floatPreferencesKey("lunch_length")
+        val SNOOZE_LENGTH = floatPreferencesKey("snooze_length")
         const val TAG = "UserPreferencesRepo"
     }
 
     suspend fun savePreferences(
         numberOfIntervals: Int,
         intervalLength: Float,
+        breakLength: Float,
+        lunchLength: Float,
+        snoozeLength: Float
     ) {
         dataStore.edit { preferences ->
             preferences[NUMBER_OF_INTERVALS] = numberOfIntervals
             preferences[INTERVAL_LENGTH] = intervalLength
+            preferences[BREAK_LENGTH] = breakLength
+            preferences[LUNCH_LENGTH] = lunchLength
+            preferences[SNOOZE_LENGTH] = snoozeLength
         }
     }
 
@@ -44,7 +53,6 @@ class UserPreferenceRepository(
             preferences[NUMBER_OF_INTERVALS] ?: 2
         }
 
-    // not yet used
     val intervalLength: Flow<Float> = dataStore.data
         .catch {
             if(it is IOException) {
@@ -56,5 +64,44 @@ class UserPreferenceRepository(
         }
         .map { preferences ->
             preferences[INTERVAL_LENGTH] ?: 30f
+        }
+
+    val breakLength: Flow<Float> = dataStore.data
+        .catch {
+            if(it is IOException) {
+                Log.e(TAG, "Error reading preferences.", it)
+                emit(emptyPreferences())
+            } else {
+                throw it
+            }
+        }
+        .map { preferences ->
+            preferences[BREAK_LENGTH] ?: 15f
+        }
+
+    val lunchLength: Flow<Float> = dataStore.data
+        .catch {
+            if(it is IOException) {
+                Log.e(TAG, "Error reading preferences.", it)
+                emit(emptyPreferences())
+            } else {
+                throw it
+            }
+        }
+        .map { preferences ->
+            preferences[LUNCH_LENGTH] ?: 60f
+        }
+
+    val snoozeLength: Flow<Float> = dataStore.data
+        .catch {
+            if(it is IOException) {
+                Log.e(TAG, "Error reading preferences.", it)
+                emit(emptyPreferences())
+            } else {
+                throw it
+            }
+        }
+        .map { preferences ->
+            preferences[SNOOZE_LENGTH] ?: 15f
         }
 }

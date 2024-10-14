@@ -104,7 +104,9 @@ fun TimerApp(
             }
             composable(route = TimerAppScreen.Settings.name) {
                 SettingsScreen(
-                    onBackButtonClick = {navController.navigateUp()}
+                    onBackButtonClick = {navController.navigateUp()},
+                    viewModel = viewModel,
+                    uiState = uiState
                 )
             }
         }

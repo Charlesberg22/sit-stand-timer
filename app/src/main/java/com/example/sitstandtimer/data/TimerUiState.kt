@@ -2,9 +2,13 @@ package com.example.sitstandtimer.data
 
 data class TimerUiState (
     // all timer length storages in minutes
-    val timerLength: Float = 30F,
+    val intervalLength: Float = 30F,
     val isStanding: Boolean = true,
     val numberOfIntervals: Int = 2,
-    val intervalsRemaining: Int = 2,
+    val breakLength: Float = 15F,
+    val lunchLength: Float = 60F,
+    val snoozeLength: Float = 15F,
+    val intervalsRemaining: Int = numberOfIntervals,
+    val onBreak: Boolean = false,
     val hadLunch: Boolean = false,
 )

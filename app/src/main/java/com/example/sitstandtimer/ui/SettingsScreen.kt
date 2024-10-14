@@ -17,22 +17,19 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.sitstandtimer.ui.theme.SitStandTimerTheme
+import com.example.sitstandtimer.data.TimerUiState
 
-// TODO: implement actually changing the settings, and storage of said settings
+// TODO: implement NFC capabilities
 
 @Composable
 fun SettingsScreen(
     onBackButtonClick: () -> Unit,
+    uiState: TimerUiState,
+    viewModel: TimerViewModel,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -46,32 +43,57 @@ fun SettingsScreen(
         }
         HorizontalDivider(modifier = Modifier)
         SliderSetting(
-            initialSliderValue = 2f,
+            initialSliderValue = uiState.numberOfIntervals.toFloat() ,
+            onSliderChange = {
+                viewModel.updatePreferences(
+                    numberOfIntervals = it.toInt(),
+                )
+            },
             settingText = "Number of intervals before break",
             valueRange = 0f..3f,
             steps = 2
         )
         SliderSetting(
-            initialSliderValue = 30f,
+            initialSliderValue = uiState.intervalLength,
+            onSliderChange = {
+                viewModel.updatePreferences(
+                    intervalLength = it
+                )
+            },
             settingText = "Length of sit/stand interval in minutes",
             valueRange = 0f..60f,
             steps = 11
         )
         SliderSetting(
-            initialSliderValue = 15f,
+            initialSliderValue = uiState.breakLength,
+            onSliderChange = {
+                viewModel.updatePreferences(
+                    breakLength = it
+                )
+            },
             settingText = "Length of break in minutes",
             valueRange = 0f..30f,
             steps = 5
         )
         SliderSetting(
-            initialSliderValue = 60f,
+            initialSliderValue = uiState.lunchLength,
+            onSliderChange = {
+                viewModel.updatePreferences(
+                    lunchLength = it
+                )
+            },
             settingText = "Length of lunch in minutes",
             valueRange = 30f..90f,
             steps = 11
         )
         SliderSetting(
-            initialSliderValue = 15f,
-            settingText = "Break snooze length in minutes",
+            initialSliderValue = uiState.snoozeLength,
+            onSliderChange = {
+                viewModel.updatePreferences(
+                    snoozeLength = it
+                )
+            },
+            settingText = "Snooze length in minutes",
             valueRange = 0f..30f,
             steps = 5
         )
@@ -91,11 +113,12 @@ fun SettingsScreen(
 fun SliderSetting(
     modifier: Modifier = Modifier,
     initialSliderValue: Float,
+    onSliderChange: (Float) -> Unit,
     settingText: String,
     valueRange: ClosedFloatingPointRange<Float>,
     steps: Int
 ) {
-    var sliderValue by remember { mutableFloatStateOf(initialSliderValue) }
+    val sliderValue = initialSliderValue
     Text(
         text = settingText,
         style = MaterialTheme.typography.bodyMedium,
@@ -106,10 +129,10 @@ fun SliderSetting(
     ) {
         Slider(
             value = sliderValue,
-            onValueChange = { sliderValue = it }, //TODO: viewmodel integration
+            onValueChange = onSliderChange,
             steps = steps,
             valueRange = valueRange,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f).padding(start = 16.dp)
         )
         Text(
             text = "%.0f".format(sliderValue),
@@ -152,12 +175,13 @@ fun NfcSetting(
     HorizontalDivider(modifier = Modifier)
 }
 
-@Preview(showBackground = true)
-@Composable
-fun SettingsScreenPreview() {
-    SitStandTimerTheme() {
-        SettingsScreen(
-            onBackButtonClick = {}
-        )
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun SettingsScreenPreview() {
+//    SitStandTimerTheme() {
+//        SettingsScreen(
+//            onBackButtonClick = {},
+//            uiState = TimerUiState(),
+//        )
+//    }
+//}
