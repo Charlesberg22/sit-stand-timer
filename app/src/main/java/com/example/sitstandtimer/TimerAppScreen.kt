@@ -1,5 +1,6 @@
 package com.example.sitstandtimer
 
+import androidx.activity.compose.BackHandler
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -50,7 +51,9 @@ fun TimerApp(
             composable(route = TimerAppScreen.Start.name){
                 StartScreen(
                     onStartButtonClicked = {
-                        /*TODO set up timer and viewmodel stuff*/
+                        viewModel.startTimer(
+                            1f,
+                            if (uiState.isStanding) "stand" else "sit")
                         navController.navigate(TimerAppScreen.Timer.name)
                     },
                     onSwitchBetweenSitAndStand = {viewModel.setStandingOrSitting()},
@@ -63,12 +66,17 @@ fun TimerApp(
                 )
             }
             composable(route = TimerAppScreen.Timer.name) {
+                BackHandler(true) {
+                    // do nothing when back button pressed
+                }
                 TimerRunningScreen(
+                    minutesRemaining = uiState.minutesRemaining,
+                    secondsRemaining = uiState.secondsRemaining,
                     onLunchButtonClicked = {},
                     onPauseButtonClicked = {},
                     onSwapButtonClicked = {},
                     onEndButtonClicked = {
-                        /*TODO set up timer and viewmodel stuff*/
+                        viewModel.cancelTimers()
                         navController.popBackStack(TimerAppScreen.Start.name, inclusive = false)
                     },
                     onSettingsButtonClicked = {
@@ -82,6 +90,9 @@ fun TimerApp(
                 )
             }
             composable(route = TimerAppScreen.Alarm.name) {
+                BackHandler(true) {
+                    // do nothing when back button pressed
+                }
                 AlarmScreen(
                     onPauseButtonClicked = {
                         /*TODO set up timer and viewmodel stuff*/

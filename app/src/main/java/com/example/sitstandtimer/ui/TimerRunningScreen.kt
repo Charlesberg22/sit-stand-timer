@@ -4,9 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
@@ -17,12 +15,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.sitstandtimer.ui.theme.SitStandTimerTheme
 
 @Composable
 fun TimerRunningScreen(
+    minutesRemaining: String,
+    secondsRemaining: String,
     onLunchButtonClicked: () -> Unit,
     onPauseButtonClicked: () -> Unit,
     onSwapButtonClicked: () -> Unit,
@@ -34,12 +32,16 @@ fun TimerRunningScreen(
     modifier: Modifier = Modifier
 ) {
     val timeToBreak = 30
+
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(modifier = Modifier.height(160.dp))
-        Text(text = "30:00", style = MaterialTheme.typography.displayLarge)
+        Text(
+            text = "$minutesRemaining:$secondsRemaining",
+            style = MaterialTheme.typography.displayLarge
+        )
         Spacer(modifier = Modifier.height(32.dp))
         Text(
             text = "You should be ${if (onBreak) "on a break" else if (isStanding) "standing" else "sitting"}",
@@ -112,22 +114,22 @@ fun TimerRunningScreen(
     }
 }
 
-@Preview (showBackground = true)
-@Composable
-fun TimerRunningScreenPreview() {
-    SitStandTimerTheme(){
-        TimerRunningScreen(
-            onLunchButtonClicked = {},
-            onPauseButtonClicked = {},
-            onSwapButtonClicked = {},
-            onEndButtonClicked = {},
-            onSettingsButtonClicked = {},
-            isStanding = false,
-            hadLunch = false,
-            onBreak = false,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(8.dp)
-        )
-    }
-}
+//@Preview (showBackground = true)
+//@Composable
+//fun TimerRunningScreenPreview() {
+//    SitStandTimerTheme(){
+//        TimerRunningScreen(
+//            onLunchButtonClicked = {},
+//            onPauseButtonClicked = {},
+//            onSwapButtonClicked = {},
+//            onEndButtonClicked = {},
+//            onSettingsButtonClicked = {},
+//            isStanding = false,
+//            hadLunch = false,
+//            onBreak = false,
+//            modifier = Modifier
+//                .fillMaxSize()
+//                .padding(8.dp)
+//        )
+//    }
+//}

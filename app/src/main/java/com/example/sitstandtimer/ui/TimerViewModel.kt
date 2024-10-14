@@ -7,9 +7,11 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.sitstandtimer.TimerApplication
+import com.example.sitstandtimer.data.TimerRepository
 import com.example.sitstandtimer.data.TimerUiState
 import com.example.sitstandtimer.data.UserPreferenceRepository
 import com.example.sitstandtimer.utils.combine
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -19,21 +21,11 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class TimerViewModel(
-    private val userPreferenceRepository: UserPreferenceRepository
+    private val userPreferenceRepository: UserPreferenceRepository,
+    private val timerRepository: TimerRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(TimerUiState())
-//    val uiStatePlain: StateFlow<TimerUiState> = _uiState.asStateFlow()
-//
-//    val uiStateNumberOfIntervals: StateFlow<TimerUiState> =
-//        userPreferenceRepository.numberOfIntervals.map { numberOfIntervals ->
-//            TimerUiState(numberOfIntervals = numberOfIntervals)
-//        }
-//            .stateIn(
-//                scope = viewModelScope,
-//                started = SharingStarted.WhileSubscribed(5_000),
-//                initialValue = TimerUiState()
-//            )
 
     // using a rewritten combine function as the default only allows 5 flows
     // this is the way I found to combine data sources from preferences and the viewmodel
@@ -63,7 +55,10 @@ class TimerViewModel(
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 val application = (this[APPLICATION_KEY] as TimerApplication)
-                TimerViewModel(application.userPreferenceRepository)
+                val timerRepository = (this[APPLICATION_KEY] as TimerApplication).container.timerRepository
+                TimerViewModel(
+                    userPreferenceRepository = application.userPreferenceRepository,
+                    timerRepository = timerRepository)
             }
         }
     }
@@ -73,6 +68,50 @@ class TimerViewModel(
         _uiState.update { currentState ->
             currentState.copy(
                 isStanding = !_uiState.value.isStanding
+            )
+        }
+    }
+
+    fun startTimer(
+        timerLength: Float = _uiState.value.intervalLength,
+        timerType: String = "stand"
+        ) {
+        timerRepository.startTimer(timerLength.toLong(), timerType)
+        _uiState.update { currentState ->
+            currentState.copy(
+                timeRemaining = (_uiState.value.intervalLength * 60).toInt()
+            )
+        }
+        viewModelScope.launch {
+            timerCountdown()
+        }
+    }
+
+    // to manually decrease time as shown on screen, as i don't know how to access the worker time
+    private suspend fun timerCountdown() {
+        while (_uiState.value.timeRemaining > 0) {
+            delay(1000L)
+            _uiState.update { currentState ->
+                val newTimeRemaining = _uiState.value.timeRemaining - 1
+                var minutes = (newTimeRemaining / 60).toString()
+                var seconds = (newTimeRemaining % 60).toString()
+                if (minutes.length == 1) minutes = "0$minutes"
+                if (seconds.length == 1) seconds = "0$seconds"
+
+                currentState.copy(
+                    timeRemaining = newTimeRemaining,
+                    minutesRemaining = minutes,
+                    secondsRemaining = seconds
+                )
+            }
+        }
+    }
+
+    fun cancelTimers() {
+        timerRepository.cancelTimers()
+        _uiState.update { currentState ->
+            currentState.copy(
+                timeRemaining = 0
             )
         }
     }

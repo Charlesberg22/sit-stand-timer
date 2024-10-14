@@ -11,4 +11,7 @@ data class TimerUiState (
     val intervalsRemaining: Int = numberOfIntervals,
     val onBreak: Boolean = false,
     val hadLunch: Boolean = false,
+    val timeRemaining: Int = (intervalLength * 60).toInt(),
+    val minutesRemaining: String = intervalLength.toInt().toString(),
+    val secondsRemaining: String = "00"
 )

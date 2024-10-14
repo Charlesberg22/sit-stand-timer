@@ -1,23 +1,37 @@
 package com.example.sitstandtimer.data
 
 import android.content.Context
-import androidx.work.WorkInfo
+import androidx.work.Data
+import androidx.work.ExistingWorkPolicy
+import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
-import kotlinx.coroutines.flow.Flow
+import com.example.sitstandtimer.worker.TimerWorker
+import java.util.concurrent.TimeUnit
 
 class WorkManagerTimerRepository(context: Context) : TimerRepository {
 
     private val workManager = WorkManager.getInstance(context)
 
-    override val outputWorkInfo: Flow<WorkInfo> {
-        TODO("Not yet implemented")
-    }
+    override fun startTimer(timerLength: Long, timerType: String) {
+        // set up input data
+        val data = Data.Builder()
+        data.putString(TimerWorker.typeKey, timerType)
 
-    override fun startTimer(timerLength: Float) {
-        TODO("Not yet implemented")
+        // add WorkRequest
+        val timerBuilder = OneTimeWorkRequestBuilder<TimerWorker>()
+            .setInitialDelay(timerLength, TimeUnit.MINUTES)
+            .setInputData(data.build())
+            .build()
+
+        // start the work
+        workManager.enqueueUniqueWork(
+            timerType,
+            ExistingWorkPolicy.REPLACE,
+            timerBuilder
+        )
     }
 
     override fun cancelTimers() {
-        TODO("Not yet implemented")
+        workManager.cancelAllWork()
     }
 }
