@@ -52,7 +52,7 @@ fun TimerApp(
                 StartScreen(
                     onStartButtonClicked = {
                         viewModel.setTimer(uiState.intervalLength.toInt() * 60)
-                        viewModel.startTimer()
+                        viewModel.startTimer(if (!uiState.isStanding) "stand" else "sit")
                         navController.navigate(TimerAppScreen.Timer.name)
                     },
                     onSwitchBetweenSitAndStand = {viewModel.setStandingOrSitting()},

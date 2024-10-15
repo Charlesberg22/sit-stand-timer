@@ -1,6 +1,5 @@
 package com.example.sitstandtimer.utils
 
-import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -10,7 +9,6 @@ import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.net.toUri
-import com.example.sitstandtimer.CHANNEL_ID
 import com.example.sitstandtimer.MainActivity
 import com.example.sitstandtimer.R
 import com.example.sitstandtimer.utils.GlobalProperties.pendingIntentFlags
@@ -56,24 +54,14 @@ class TimerNotificationHelper(
         createTimerNotificationChannels()
     }
 
-    fun getTimerBaseNotification() =
+    fun showTimerRunningNotification() =
         NotificationCompat.Builder(applicationContext, TIMER_RUNNING_CHANNEL)
             .setContentTitle("Time remaining in current position")
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setContentIntent(openTimerPendingIntent)
             .setAutoCancel(true)
             .setOngoing(true)
-
-    @SuppressLint("MissingPermission")
-    fun updateTimerServiceNotification(
-        minutesRemaining: String,
-        secondsRemaining: String
-    ) {
-        val notificationUpdate = getTimerBaseNotification()
-            .setContentText("$minutesRemaining:$secondsRemaining")
             .build()
-        notificationManager.notify(TIMER_RUNNING_NOTIFICATION_ID, notificationUpdate)
-    }
 
     fun removeTimerRunningNotification() {
         notificationManager.cancel(TIMER_RUNNING_NOTIFICATION_ID)
@@ -95,7 +83,7 @@ class TimerNotificationHelper(
     private fun createTimerNotificationChannels() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val timerRunningChannel = NotificationChannel(
-                CHANNEL_ID,
+                TIMER_RUNNING_CHANNEL,
                 TIMER_RUNNING_CHANNEL,
                 NotificationManager.IMPORTANCE_DEFAULT
             )
@@ -104,7 +92,7 @@ class TimerNotificationHelper(
                 timerRunningChannel.setSound(null, null)
 
             val timerFinishedChannel = NotificationChannel(
-                CHANNEL_ID,
+                TIMER_FINISHED_CHANNEL,
                 TIMER_FINISHED_CHANNEL,
                 NotificationManager.IMPORTANCE_HIGH
             )

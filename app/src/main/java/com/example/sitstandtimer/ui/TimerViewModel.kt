@@ -100,13 +100,13 @@ class TimerViewModel(
         }
     }
 
-    fun startTimer() {
+    fun startTimer(type: String) {
         timerHelper?.start()
         _uiState.update { currentState ->
             currentState.copy(isTimerRunning = true)
         }
         if (_uiState.value.isTimerFinished) {
-            timerRepository.startTimerRunningNotification()
+            timerRepository.startTimerRunningNotification(type)
             _uiState.update { currentState ->
                 currentState.copy(isTimerFinished = false)
             }

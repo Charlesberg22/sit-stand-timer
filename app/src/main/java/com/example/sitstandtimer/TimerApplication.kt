@@ -5,11 +5,14 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
+import androidx.work.Configuration
 import com.example.sitstandtimer.data.AppContainer
 import com.example.sitstandtimer.data.DefaultAppContainer
 import com.example.sitstandtimer.data.UserPreferenceRepository
+import com.example.sitstandtimer.data.workManager.factory.TimerRunningWorkerFactory
+import com.example.sitstandtimer.utils.TimerNotificationHelper
 
-class TimerApplication: Application() {
+class TimerApplication: Application(), Configuration.Provider {
     lateinit var userPreferenceRepository: UserPreferenceRepository
     lateinit var container: AppContainer
 
@@ -17,6 +20,16 @@ class TimerApplication: Application() {
         super.onCreate()
         userPreferenceRepository = UserPreferenceRepository(dataStore)
         container = DefaultAppContainer(this)
+    }
+
+    override val workManagerConfiguration: Configuration
+        get() {
+        val timerNotificationHelper = TimerNotificationHelper(this)
+
+        return Configuration.Builder()
+            .setWorkerFactory(TimerRunningWorkerFactory(timerNotificationHelper))
+            .build()
+
     }
 }
 

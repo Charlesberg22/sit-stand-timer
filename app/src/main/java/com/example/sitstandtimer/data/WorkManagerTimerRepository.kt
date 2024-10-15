@@ -1,6 +1,7 @@
 package com.example.sitstandtimer.data
 
 import android.content.Context
+import androidx.work.Data
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
@@ -11,18 +12,22 @@ import com.example.sitstandtimer.data.workManager.worker.TimerRunningWorker
 
 class WorkManagerTimerRepository(context: Context) : TimerRepository {
 
-    val workManager = WorkManager.getInstance(context)
+    private val workManager = WorkManager.getInstance(context)
 
 
-    override fun startTimerRunningNotification() {
+    override fun startTimerRunningNotification(type: String) {
+        val data = Data.Builder()
+        data.putString(TimerRunningWorker.typeKey, type)
+
         // add work request
         val timerRunningBuilder = OneTimeWorkRequestBuilder<TimerRunningWorker>()
             .addTag(tag = TIMER_RUNNING_TAG)
+            .setInputData(data.build())
             .build()
 
         //start the work
         workManager.enqueueUniqueWork(
-            TIMER_RUNNING_TAG,
+            type,
             ExistingWorkPolicy.REPLACE,
             timerRunningBuilder
         )
