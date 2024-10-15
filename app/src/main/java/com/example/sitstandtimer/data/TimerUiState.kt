@@ -11,7 +11,10 @@ data class TimerUiState (
     val intervalsRemaining: Int = numberOfIntervals,
     val onBreak: Boolean = false,
     val hadLunch: Boolean = false,
-    val timeRemaining: Int = (intervalLength * 60).toInt(),
+    val timeRemainingInSeconds: Int = (intervalLength* 60).toInt(),
     val minutesRemaining: String = intervalLength.toInt().toString(),
-    val secondsRemaining: String = "00"
+    val secondsRemaining: String = "00",
+    val isTimerRunning: Boolean = false,
+    val isTimerFinished: Boolean = true,
+    val isTimeToScanNFC: Boolean = false
 )

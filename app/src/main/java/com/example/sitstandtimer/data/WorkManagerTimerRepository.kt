@@ -1,37 +1,48 @@
 package com.example.sitstandtimer.data
 
 import android.content.Context
-import androidx.work.Data
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
-import com.example.sitstandtimer.worker.TimerWorker
-import java.util.concurrent.TimeUnit
+import com.example.sitstandtimer.data.workManager.worker.TIMER_FINISHED_TAG
+import com.example.sitstandtimer.data.workManager.worker.TIMER_RUNNING_TAG
+import com.example.sitstandtimer.data.workManager.worker.TimerFinishedWorker
+import com.example.sitstandtimer.data.workManager.worker.TimerRunningWorker
 
 class WorkManagerTimerRepository(context: Context) : TimerRepository {
 
-    private val workManager = WorkManager.getInstance(context)
+    val workManager = WorkManager.getInstance(context)
 
-    override fun startTimer(timerLength: Long, timerType: String) {
-        // set up input data
-        val data = Data.Builder()
-        data.putString(TimerWorker.typeKey, timerType)
 
-        // add WorkRequest
-        val timerBuilder = OneTimeWorkRequestBuilder<TimerWorker>()
-            .setInitialDelay(timerLength, TimeUnit.MINUTES)
-            .setInputData(data.build())
+    override fun startTimerRunningNotification() {
+        // add work request
+        val timerRunningBuilder = OneTimeWorkRequestBuilder<TimerRunningWorker>()
+            .addTag(tag = TIMER_RUNNING_TAG)
             .build()
 
-        // start the work
+        //start the work
         workManager.enqueueUniqueWork(
-            timerType,
+            TIMER_RUNNING_TAG,
             ExistingWorkPolicy.REPLACE,
-            timerBuilder
+            timerRunningBuilder
         )
     }
 
-    override fun cancelTimers() {
-        workManager.cancelAllWork()
+    override fun startTimerFinishedNotification() {
+        // add work request
+        val timerFinishedBuilder = OneTimeWorkRequestBuilder<TimerFinishedWorker>()
+            .addTag(tag = TIMER_FINISHED_TAG)
+            .build()
+
+        //start the work
+        workManager.enqueueUniqueWork(
+            TIMER_FINISHED_TAG,
+            ExistingWorkPolicy.REPLACE,
+            timerFinishedBuilder
+        )
+    }
+
+    override fun cancelWorker(tag: String) {
+        workManager.cancelAllWorkByTag(tag)
     }
 }

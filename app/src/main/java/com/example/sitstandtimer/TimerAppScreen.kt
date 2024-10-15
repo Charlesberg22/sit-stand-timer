@@ -51,9 +51,8 @@ fun TimerApp(
             composable(route = TimerAppScreen.Start.name){
                 StartScreen(
                     onStartButtonClicked = {
-                        viewModel.startTimer(
-                            1f,
-                            if (uiState.isStanding) "stand" else "sit")
+                        viewModel.setTimer(uiState.intervalLength.toInt() * 60)
+                        viewModel.startTimer()
                         navController.navigate(TimerAppScreen.Timer.name)
                     },
                     onSwitchBetweenSitAndStand = {viewModel.setStandingOrSitting()},
@@ -76,7 +75,7 @@ fun TimerApp(
                     onPauseButtonClicked = {},
                     onSwapButtonClicked = {},
                     onEndButtonClicked = {
-                        viewModel.cancelTimers()
+                        viewModel.resetTimer()
                         navController.popBackStack(TimerAppScreen.Start.name, inclusive = false)
                     },
                     onSettingsButtonClicked = {

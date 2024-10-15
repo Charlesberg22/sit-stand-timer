@@ -10,8 +10,9 @@ import com.example.sitstandtimer.TimerApplication
 import com.example.sitstandtimer.data.TimerRepository
 import com.example.sitstandtimer.data.TimerUiState
 import com.example.sitstandtimer.data.UserPreferenceRepository
+import com.example.sitstandtimer.data.workManager.worker.TIMER_RUNNING_TAG
+import com.example.sitstandtimer.utils.TimerHelper
 import com.example.sitstandtimer.utils.combine
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -22,7 +23,7 @@ import kotlinx.coroutines.launch
 
 class TimerViewModel(
     private val userPreferenceRepository: UserPreferenceRepository,
-    private val timerRepository: TimerRepository
+    private val timerRepository: TimerRepository,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(TimerUiState())
@@ -72,48 +73,64 @@ class TimerViewModel(
         }
     }
 
-    fun startTimer(
-        timerLength: Float = _uiState.value.intervalLength,
-        timerType: String = "stand"
-        ) {
-        timerRepository.startTimer(timerLength.toLong(), timerType)
-        _uiState.update { currentState ->
-            currentState.copy(
-                timeRemaining = (_uiState.value.intervalLength * 60).toInt()
-            )
-        }
-        viewModelScope.launch {
-            timerCountdown()
-        }
-    }
+    private var timerHelper: TimerHelper? = null
 
-    // to manually decrease time as shown on screen, as i don't know how to access the worker time
-    private suspend fun timerCountdown() {
-        while (_uiState.value.timeRemaining > 0) {
-            delay(1000L)
-            _uiState.update { currentState ->
-                val newTimeRemaining = _uiState.value.timeRemaining - 1
-                var minutes = (newTimeRemaining / 60).toString()
-                var seconds = (newTimeRemaining % 60).toString()
-                if (minutes.length == 1) minutes = "0$minutes"
-                if (seconds.length == 1) seconds = "0$seconds"
+    fun setTimer(duration: Int) {
+        timerHelper = object : TimerHelper(durationInSeconds = duration) {
+            override fun onTimerTick(remainingTime: Int) {
+                _uiState.update { currentState ->
+                    var minutes = (remainingTime / 60).toString()
+                    var seconds = (remainingTime % 60).toString()
+                    if (minutes.length == 1) minutes = "0$minutes"
+                    if (seconds.length == 1) seconds = "0$seconds"
 
-                currentState.copy(
-                    timeRemaining = newTimeRemaining,
-                    minutesRemaining = minutes,
-                    secondsRemaining = seconds
-                )
+                    currentState.copy(
+                        timeRemainingInSeconds = remainingTime,
+                        minutesRemaining = minutes,
+                        secondsRemaining = seconds,
+                        isTimerRunning = true
+                    )
+                }
+            }
+
+            override fun onTimerFinish() {
+                timerRepository.startTimerFinishedNotification()
+                resetTimer()
             }
         }
     }
 
-    fun cancelTimers() {
-        timerRepository.cancelTimers()
+    fun startTimer() {
+        timerHelper?.start()
+        _uiState.update { currentState ->
+            currentState.copy(isTimerRunning = true)
+        }
+        if (_uiState.value.isTimerFinished) {
+            timerRepository.startTimerRunningNotification()
+            _uiState.update { currentState ->
+                currentState.copy(isTimerFinished = false)
+            }
+        }
+    }
+
+    fun pauseTimer() {
+        timerHelper?.pause()
+        _uiState.update { currentState ->
+            currentState.copy(isTimerRunning = false)
+        }
+    }
+
+    fun resetTimer() {
+        timerHelper?.reset()
         _uiState.update { currentState ->
             currentState.copy(
-                timeRemaining = 0
+                isTimerRunning = false,
+                isTimerFinished = true,
+                minutesRemaining = _uiState.value.intervalLength.toInt().toString(),
+                secondsRemaining = "00"
             )
         }
+        timerRepository.cancelWorker(TIMER_RUNNING_TAG)
     }
 
     // save preferences, with defaults so one can be updated at a time
