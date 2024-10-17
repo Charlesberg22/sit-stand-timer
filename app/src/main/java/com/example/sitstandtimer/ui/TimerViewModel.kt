@@ -91,14 +91,14 @@ class TimerViewModel(
 
     private var timerHelper: TimerHelper? = null
 
-    fun setTimer(duration: Int, timerType: TimerType) {
-        timerRepository.stopTimerFinishedNotification()
-        val type: String =
-            when (timerType) {
-                TimerType.STAND -> "stand"
-                TimerType.SIT -> "sit"
-                TimerType.BREAK -> "break"
-                TimerType.LUNCH -> "lunch"
+    fun setTimer() {
+        timerRepository.stopTimerFinishedNotification() // TODO: consider adding a cancel sound to this function for the buzzer stuff
+        val duration: Int =
+            when (uiState.value.timerType) {
+                TimerType.STAND, TimerType.SIT -> uiState.value.intervalLength.toInt() * 60
+                TimerType.BREAK -> uiState.value.breakLength.toInt() * 60
+                TimerType.LUNCH -> uiState.value.lunchLength.toInt() * 60
+                TimerType.SNOOZE -> uiState.value.snoozeLength.toInt() * 60
             }
 
         timerHelper = object : TimerHelper(durationInSeconds = duration) {
@@ -119,9 +119,6 @@ class TimerViewModel(
             }
 
             override fun onTimerFinish() {
-                // TODO: want the TimerType to change to the right type, and be passed in here so that the finished notification and alarm page are correct
-                timerRepository.startTimerFinishedNotification(type)
-                navigateToPage("Alarm")
                 if (uiState.value.timerType == TimerType.SIT || uiState.value.timerType == TimerType.STAND) {
                     _uiState.update { currentState ->
                         currentState.copy(
@@ -131,6 +128,10 @@ class TimerViewModel(
                         )
                     }
                 }
+                val type = _uiState.value.timerType.name
+                // TODO: want the TimerType to change to the right type, and be passed in here so that the finished notification and alarm page are correct
+                timerRepository.startTimerFinishedNotification(type)
+                navigateToPage("Alarm")
                 resetTimer()
             }
         }
@@ -138,13 +139,7 @@ class TimerViewModel(
 
     fun startTimer(timerType: TimerType) {
         timerHelper?.start()
-        val type: String =
-            when (timerType) {
-                TimerType.STAND -> "stand"
-                TimerType.SIT -> "sit"
-                TimerType.BREAK -> "break"
-                TimerType.LUNCH -> "lunch"
-            }
+        val type = uiState.value.timerType.name
         _uiState.update { currentState ->
             currentState.copy(
                 isTimerRunning = true,
@@ -166,6 +161,7 @@ class TimerViewModel(
         }
     }
 
+    // TODO: add a full reset to call when end day is pressed, and fix reset so that it correctly sets the next timer, may even be unnecessary?
     fun resetTimer() {
         timerHelper?.reset()
         _uiState.update { currentState ->

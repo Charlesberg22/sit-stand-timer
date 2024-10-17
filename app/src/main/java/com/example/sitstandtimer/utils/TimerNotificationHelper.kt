@@ -59,10 +59,10 @@ class TimerNotificationHelper(
         NotificationCompat.Builder(applicationContext, TIMER_RUNNING_CHANNEL)
             .setContentTitle(
                 when (type) {
-                    "stand" -> "You should be standing"
-                    "sit" -> "You should be sitting"
-                    "break" -> "You should be on break"
-                    "lunch" -> "You should be having lunch"
+                    "STAND" -> "You should be standing"
+                    "SIT" -> "You should be sitting"
+                    "BREAK" -> "You should be on break"
+                    "LUNCH" -> "You should be having lunch"
                     else -> "Error: I don't know what you should be doing"
                 }
             )
@@ -110,9 +110,9 @@ class TimerNotificationHelper(
         NotificationCompat.Builder(applicationContext, TIMER_FINISHED_CHANNEL)
             .setContentTitle(
                 when (type) {
-                "stand" -> "Time to stand"
-                "sit" -> "Time to sit"
-                "break" -> "Time to have a break"
+                "STAND" -> "Time to stand"
+                "SIT" -> "Time to sit"
+                "BREAK" -> "Time to have a break"
                 else -> "Error: I don't know what it's time for"
             } )
             .setFullScreenIntent(openAlarmPendingIntent, true)

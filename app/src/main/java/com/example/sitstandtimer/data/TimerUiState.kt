@@ -22,9 +22,10 @@ data class TimerUiState (
     val timerType: TimerType = TimerType.STAND
 )
 
-enum class TimerType {
-    SIT,
-    STAND,
-    BREAK,
-    LUNCH,
+enum class TimerType(title: String) {
+    SIT("sit"),
+    STAND("stand"),
+    BREAK("break"),
+    LUNCH("lunch"),
+    SNOOZE("snooze")
 }

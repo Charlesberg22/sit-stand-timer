@@ -2,9 +2,7 @@ package com.example.sitstandtimer.ui
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -15,19 +13,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.sitstandtimer.ui.theme.SitStandTimerTheme
+import com.example.sitstandtimer.data.TimerType
 
 @Composable
 fun AlarmScreen(
     onPauseButtonClicked: () -> Unit,
     onAcknowledgeClicked: () -> Unit,
     onEndButtonClicked: () -> Unit,
-    isStanding: Boolean,
+    timerType: TimerType,
     onBreak: Boolean,
     isTimeToScanNfc: Boolean,
     modifier: Modifier = Modifier
+
 ) {
     Column(
         modifier = modifier,
@@ -35,7 +33,14 @@ fun AlarmScreen(
     ) {
         Spacer(modifier = Modifier.height(160.dp))
         Text(
-            text = "Time to ${if (!onBreak) "take a break" else if (isStanding) "sit" else "stand"}",
+            text =
+            when (timerType) {
+                TimerType.STAND -> "Time to stand"
+                TimerType.SIT -> "Time to sit"
+                TimerType.BREAK -> "Time to take a break"
+                TimerType.SNOOZE -> "do the opposite thing I guess"
+                TimerType.LUNCH -> "Time for lunch"
+            },
             style = MaterialTheme.typography.displaySmall
         )
         Spacer(modifier = Modifier.height(64.dp))
@@ -93,20 +98,20 @@ fun AlarmScreen(
     }
 }
 
-@Preview (showBackground = true)
-@Composable
-fun AlarmScreenPreview() {
-    SitStandTimerTheme(){
-        AlarmScreen(
-            onPauseButtonClicked = {},
-            onAcknowledgeClicked = {},
-            onEndButtonClicked = {},
-            isStanding = false,
-            isTimeToScanNfc = false,
-            onBreak = true,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(8.dp)
-        )
-    }
-}
+//@Preview (showBackground = true)
+//@Composable
+//fun AlarmScreenPreview() {
+//    SitStandTimerTheme(){
+//        AlarmScreen(
+//            onPauseButtonClicked = {},
+//            onAcknowledgeClicked = {},
+//            onEndButtonClicked = {},
+//            isStanding = false,
+//            isTimeToScanNfc = false,
+//            onBreak = true,
+//            modifier = Modifier
+//                .fillMaxSize()
+//                .padding(8.dp)
+//        )
+//    }
+//}

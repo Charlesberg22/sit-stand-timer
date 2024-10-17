@@ -66,10 +66,7 @@ fun TimerApp(
                 ){
                 StartScreen(
                     onStartButtonClicked = {
-                        viewModel.setTimer(
-                            duration = uiState.intervalLength.toInt() * 60,
-                            timerType = uiState.timerType
-                        )
+                        viewModel.setTimer()
                         viewModel.startTimer(uiState.timerType)
                         navController.navigate(TimerAppScreen.Timer.name)
                     },
@@ -123,14 +120,7 @@ fun TimerApp(
                         navController.popBackStack(TimerAppScreen.Timer.name, inclusive = false)
                     },
                     onAcknowledgeClicked = {
-                        viewModel.setTimer(
-                            duration = if (uiState.intervalsRemaining > 0) {
-                                uiState.intervalLength.toInt() * 60
-                            } else {
-                                uiState.breakLength.toInt() * 60
-                            },
-                            timerType = uiState.timerType
-                        )
+                        viewModel.setTimer()
                         viewModel.startTimer(uiState.timerType)
                         navController.popBackStack(TimerAppScreen.Timer.name, inclusive = false)
                     },
@@ -138,7 +128,7 @@ fun TimerApp(
                         /*TODO set up timer and viewmodel stuff*/
                         navController.popBackStack(TimerAppScreen.Start.name, inclusive = false)
                     },
-                    isStanding = false,
+                    timerType = uiState.timerType,
                     isTimeToScanNfc = false,
                     onBreak = true,
                     modifier = Modifier
