@@ -5,9 +5,9 @@ import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.example.sitstandtimer.utils.TimerNotificationHelper
-import kotlinx.coroutines.CancellationException
+import kotlin.coroutines.cancellation.CancellationException
 
-class TimerRunningWorker(
+class TimerCancelledWorker(
     context: Context,
     workerParameters: WorkerParameters,
     private val timerNotificationHelper: TimerNotificationHelper
@@ -17,20 +17,11 @@ class TimerRunningWorker(
     override suspend fun doWork(): Result {
         return try {
 
-            val type = inputData.getString(typeKey)
-
-            timerNotificationHelper.showTimerRunningNotification(type)
+            timerNotificationHelper.removeTimerRunningNotification()
 
             Result.success()
         } catch (e: CancellationException) {
-            timerNotificationHelper.removeTimerRunningNotification()
             Result.failure()
         }
     }
-
-    companion object {
-        const val typeKey = "TYPE"
-    }
 }
-
-const val TIMER_RUNNING_TAG = "timerRunningTag"

@@ -9,7 +9,8 @@ import androidx.work.Configuration
 import com.example.sitstandtimer.data.AppContainer
 import com.example.sitstandtimer.data.DefaultAppContainer
 import com.example.sitstandtimer.data.UserPreferenceRepository
-import com.example.sitstandtimer.data.workManager.factory.TimerRunningWorkerFactory
+import com.example.sitstandtimer.data.workManager.factory.TimerWorkerFactory
+import com.example.sitstandtimer.utils.MediaPlayerHelper
 import com.example.sitstandtimer.utils.TimerNotificationHelper
 
 class TimerApplication: Application(), Configuration.Provider {
@@ -25,9 +26,10 @@ class TimerApplication: Application(), Configuration.Provider {
     override val workManagerConfiguration: Configuration
         get() {
         val timerNotificationHelper = TimerNotificationHelper(this)
+        val mediaPlayerHelper = MediaPlayerHelper(this)
 
         return Configuration.Builder()
-            .setWorkerFactory(TimerRunningWorkerFactory(timerNotificationHelper))
+            .setWorkerFactory(TimerWorkerFactory(timerNotificationHelper, mediaPlayerHelper))
             .build()
 
     }

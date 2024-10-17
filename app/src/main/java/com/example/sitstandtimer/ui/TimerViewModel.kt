@@ -8,6 +8,7 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.sitstandtimer.TimerApplication
 import com.example.sitstandtimer.data.TimerRepository
+import com.example.sitstandtimer.data.TimerType
 import com.example.sitstandtimer.data.TimerUiState
 import com.example.sitstandtimer.data.UserPreferenceRepository
 import com.example.sitstandtimer.data.workManager.worker.TIMER_RUNNING_TAG
@@ -43,13 +44,27 @@ class TimerViewModel(
             intervalLength = intervalLength,
             breakLength = breakLength,
             lunchLength = lunchLength,
-            snoozeLength = snoozeLength
+            snoozeLength = snoozeLength,
         )
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
         initialValue = TimerUiState()
     )
+
+    // navigation state flow
+    private val _navigateTo = MutableStateFlow<String?>(null)
+    val navigateTo: StateFlow<String?> = _navigateTo
+
+    // trigger navigation to a specific page
+    fun navigateToPage(page: String) {
+        _navigateTo.value = page
+    }
+
+    // reset navigation after handling
+    fun resetNavigation() {
+        _navigateTo.value = null
+    }
 
     // to get user preferences repository dependency of viewmodel sorted
     companion object {
@@ -68,14 +83,24 @@ class TimerViewModel(
     fun setStandingOrSitting() {
         _uiState.update { currentState ->
             currentState.copy(
-                isStanding = !_uiState.value.isStanding
+                isStanding = !_uiState.value.isStanding,
+                timerType = if (_uiState.value.isStanding) TimerType.STAND else TimerType.SIT
             )
         }
     }
 
     private var timerHelper: TimerHelper? = null
 
-    fun setTimer(duration: Int) {
+    fun setTimer(duration: Int, timerType: TimerType) {
+        timerRepository.stopTimerFinishedNotification()
+        val type: String =
+            when (timerType) {
+                TimerType.STAND -> "stand"
+                TimerType.SIT -> "sit"
+                TimerType.BREAK -> "break"
+                TimerType.LUNCH -> "lunch"
+            }
+
         timerHelper = object : TimerHelper(durationInSeconds = duration) {
             override fun onTimerTick(remainingTime: Int) {
                 _uiState.update { currentState ->
@@ -94,16 +119,37 @@ class TimerViewModel(
             }
 
             override fun onTimerFinish() {
-                timerRepository.startTimerFinishedNotification()
+                // TODO: want the TimerType to change to the right type, and be passed in here so that the finished notification and alarm page are correct
+                timerRepository.startTimerFinishedNotification(type)
+                navigateToPage("Alarm")
+                if (uiState.value.timerType == TimerType.SIT || uiState.value.timerType == TimerType.STAND) {
+                    _uiState.update { currentState ->
+                        currentState.copy(
+                            intervalsRemaining = uiState.value.intervalsRemaining - 1,
+                            isStanding = !uiState.value.isStanding,
+                            timerType = if (_uiState.value.isStanding) TimerType.SIT else TimerType.STAND
+                        )
+                    }
+                }
                 resetTimer()
             }
         }
     }
 
-    fun startTimer(type: String) {
+    fun startTimer(timerType: TimerType) {
         timerHelper?.start()
+        val type: String =
+            when (timerType) {
+                TimerType.STAND -> "stand"
+                TimerType.SIT -> "sit"
+                TimerType.BREAK -> "break"
+                TimerType.LUNCH -> "lunch"
+            }
         _uiState.update { currentState ->
-            currentState.copy(isTimerRunning = true)
+            currentState.copy(
+                isTimerRunning = true,
+                minutesRemaining = uiState.value.intervalLength.toInt().toString()
+            )
         }
         if (_uiState.value.isTimerFinished) {
             timerRepository.startTimerRunningNotification(type)
@@ -126,11 +172,12 @@ class TimerViewModel(
             currentState.copy(
                 isTimerRunning = false,
                 isTimerFinished = true,
-                minutesRemaining = _uiState.value.intervalLength.toInt().toString(),
+                minutesRemaining = uiState.value.intervalLength.toInt().toString(),
                 secondsRemaining = "00"
             )
         }
         timerRepository.cancelWorker(TIMER_RUNNING_TAG)
+        timerRepository.stopTimerRunningNotification()
     }
 
     // save preferences, with defaults so one can be updated at a time

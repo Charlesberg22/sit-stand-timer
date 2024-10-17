@@ -62,7 +62,7 @@ fun SettingsScreen(
             },
             settingText = "Length of sit/stand interval in minutes",
             valueRange = 0f..60f,
-            steps = 11
+            steps = 59
         )
         SliderSetting(
             initialSliderValue = uiState.breakLength,

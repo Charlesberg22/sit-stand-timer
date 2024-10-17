@@ -1,5 +1,6 @@
 package com.example.sitstandtimer.utils
 
+import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -16,11 +17,31 @@ import com.example.sitstandtimer.utils.GlobalProperties.pendingIntentFlags
 class TimerNotificationHelper(
     private val applicationContext : Context
 ) {
-    private val notificationManager = NotificationManagerCompat.from(applicationContext)
+    private val notificationManager =
+        applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager?
+
+    init {
+        createTimerRunningNotificationChannel()
+        createTimerFinishedNotificationChannel()
+    }
+
+    private fun createTimerRunningNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val importance = NotificationManager.IMPORTANCE_HIGH
+            val channel = NotificationChannel(
+                TIMER_RUNNING_CHANNEL,
+                "Timer running channel",
+                importance
+            )
+            channel.description = "Shows notification when timer running"
+
+            notificationManager?.createNotificationChannel(channel)
+        }
+    }
 
     private val openTimerIntent = Intent(
         Intent.ACTION_VIEW,
-        "https://www.sitstandtimer.com/Running".toUri(),
+        "https://www.sitstandtimer.com/Timer".toUri(),
         applicationContext,
         MainActivity::class.java
     ).apply {
@@ -34,9 +55,44 @@ class TimerNotificationHelper(
         pendingIntentFlags
     )
 
+    private fun timerRunningBuilder(type: String?) =
+        NotificationCompat.Builder(applicationContext, TIMER_RUNNING_CHANNEL)
+            .setContentTitle(
+                when (type) {
+                    "stand" -> "You should be standing"
+                    "sit" -> "You should be sitting"
+                    "break" -> "You should be on break"
+                    "lunch" -> "You should be having lunch"
+                    else -> "Error: I don't know what you should be doing"
+                }
+            )
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setContentIntent(openTimerPendingIntent)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setAutoCancel(true)
+            .setOngoing(true)
+
+    @SuppressLint("MissingPermission")
+    fun showTimerRunningNotification(type: String?) =
+        NotificationManagerCompat.from(applicationContext).notify(TIMER_RUNNING_NOTIFICATION_ID, timerRunningBuilder(type).build())
+
+    private fun createTimerFinishedNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val importance = NotificationManager.IMPORTANCE_HIGH
+            val channel = NotificationChannel(
+                TIMER_FINISHED_CHANNEL,
+                "Timer finished channel",
+                importance
+            )
+            channel.description = "Shows notification when timer finished"
+
+            notificationManager?.createNotificationChannel(channel)
+        }
+    }
+
     private val openAlarmIntent = Intent(
         Intent.ACTION_VIEW,
-        "https://www.sitstandtimer.com/Finished".toUri(),
+        "https://www.sitstandtimer.com/Alarm".toUri(),
         applicationContext,
         MainActivity::class.java
     ).apply {
@@ -50,64 +106,79 @@ class TimerNotificationHelper(
         pendingIntentFlags
     )
 
-    init {
-        createTimerNotificationChannels()
-    }
-
-    fun showTimerRunningNotification() =
-        NotificationCompat.Builder(applicationContext, TIMER_RUNNING_CHANNEL)
-            .setContentTitle("Time remaining in current position")
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
-            .setContentIntent(openTimerPendingIntent)
-            .setAutoCancel(true)
-            .setOngoing(true)
-            .build()
-
-    fun removeTimerRunningNotification() {
-        notificationManager.cancel(TIMER_RUNNING_NOTIFICATION_ID)
-    }
-
-    fun showTimerFinishedNotification() =
+    private fun timerFinishedBuilder(type: String?) =
         NotificationCompat.Builder(applicationContext, TIMER_FINISHED_CHANNEL)
-            .setContentTitle("Time to change position")
+            .setContentTitle(
+                when (type) {
+                "stand" -> "Time to stand"
+                "sit" -> "Time to sit"
+                "break" -> "Time to have a break"
+                else -> "Error: I don't know what it's time for"
+            } )
             .setFullScreenIntent(openAlarmPendingIntent, true)
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setAutoCancel(true)
             .setOngoing(true)
-            .build()
+
+    @SuppressLint("MissingPermission")
+    fun showTimerFinishedNotification(type: String?) {
+        NotificationManagerCompat.from(applicationContext).notify(TIMER_FINISHED_NOTIFICATION_ID, timerFinishedBuilder(type).build())
+    }
+
+//    fun showTimerRunningNotification() =
+//        NotificationCompat.Builder(applicationContext, TIMER_RUNNING_CHANNEL)
+//            .setContentTitle("Time remaining in current position")
+//            .setSmallIcon(R.drawable.ic_launcher_foreground)
+//            .setContentIntent(openTimerPendingIntent)
+//            .setAutoCancel(true)
+//            .setOngoing(true)
+//            .build()
+
+    fun removeTimerRunningNotification() {
+        notificationManager?.cancel(TIMER_RUNNING_NOTIFICATION_ID)
+    }
+
+//    fun showTimerFinishedNotification() =
+//        NotificationCompat.Builder(applicationContext, TIMER_FINISHED_CHANNEL)
+//            .setContentTitle("Time to change position")
+//            .setFullScreenIntent(openAlarmPendingIntent, true)
+//            .setSmallIcon(R.drawable.ic_launcher_foreground)
+//            .setAutoCancel(true)
+//            .setOngoing(true)
+//            .build()
 
     fun removeTimerFinishedNotification() {
-        notificationManager.cancel(TIMER_FINISHED_NOTIFICATION_ID)
+        notificationManager?.cancel(TIMER_FINISHED_NOTIFICATION_ID)
     }
 
-    private fun createTimerNotificationChannels() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val timerRunningChannel = NotificationChannel(
-                TIMER_RUNNING_CHANNEL,
-                TIMER_RUNNING_CHANNEL,
-                NotificationManager.IMPORTANCE_DEFAULT
-            )
-                timerRunningChannel.name = "Timer Running Channel"
-                timerRunningChannel.description = "Shows notification when timer running"
-                timerRunningChannel.setSound(null, null)
-
-            val timerFinishedChannel = NotificationChannel(
-                TIMER_FINISHED_CHANNEL,
-                TIMER_FINISHED_CHANNEL,
-                NotificationManager.IMPORTANCE_HIGH
-            )
-                timerFinishedChannel.name = "Timer Finished Channel"
-                timerFinishedChannel.description = "Shows notification when timer finished"
-                timerFinishedChannel.setSound(null, null)
-
-            notificationManager.createNotificationChannels(
-                listOf(
-                    timerRunningChannel,
-                    timerFinishedChannel
-                )
-            )
-        }
-    }
+//    private fun createTimerNotificationChannels() {
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//            val timerRunningChannel = NotificationChannelCompat.Builder(
+//                TIMER_RUNNING_CHANNEL,
+//                NotificationManager.IMPORTANCE_DEFAULT
+//            )
+//                .setName("Timer Running Channel")
+//                .setDescription("Shows notification when timer running")
+//                .setSound(null, null)
+//                .build()
+//
+//            val timerFinishedChannel = NotificationChannelCompat.Builder(
+//                TIMER_FINISHED_CHANNEL,
+//                NotificationManager.IMPORTANCE_MAX
+//            )
+//                .setName("Timer Finished Channel")
+//                .setDescription("Shows notification when timer finished")
+//                .setSound(null, null)
+//                .build()
+//
+//            notificationManager.createNotificationChannelsCompat(
+//                listOf(
+//                    timerRunningChannel,
+//                    timerFinishedChannel
+//                )
+//            )
+//        }
+//    }
 
 }
 

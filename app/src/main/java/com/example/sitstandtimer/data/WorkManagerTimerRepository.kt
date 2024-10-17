@@ -5,8 +5,10 @@ import androidx.work.Data
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
+import com.example.sitstandtimer.data.workManager.worker.AlarmAcknowledgedWorker
 import com.example.sitstandtimer.data.workManager.worker.TIMER_FINISHED_TAG
 import com.example.sitstandtimer.data.workManager.worker.TIMER_RUNNING_TAG
+import com.example.sitstandtimer.data.workManager.worker.TimerCancelledWorker
 import com.example.sitstandtimer.data.workManager.worker.TimerFinishedWorker
 import com.example.sitstandtimer.data.workManager.worker.TimerRunningWorker
 
@@ -33,10 +35,15 @@ class WorkManagerTimerRepository(context: Context) : TimerRepository {
         )
     }
 
-    override fun startTimerFinishedNotification() {
+    override fun startTimerFinishedNotification(type: String) {
+        val data = Data.Builder()
+        data.putString(TimerRunningWorker.typeKey, type)
+
+
         // add work request
         val timerFinishedBuilder = OneTimeWorkRequestBuilder<TimerFinishedWorker>()
             .addTag(tag = TIMER_FINISHED_TAG)
+            .setInputData(data.build())
             .build()
 
         //start the work
@@ -49,5 +56,31 @@ class WorkManagerTimerRepository(context: Context) : TimerRepository {
 
     override fun cancelWorker(tag: String) {
         workManager.cancelAllWorkByTag(tag)
+    }
+
+    override fun stopTimerRunningNotification() {
+        // add work request
+        val timerCancelledBuilder = OneTimeWorkRequestBuilder<TimerCancelledWorker>()
+            .build()
+
+        //start the work
+        workManager.enqueueUniqueWork(
+            "cancel",
+            ExistingWorkPolicy.REPLACE,
+            timerCancelledBuilder
+        )
+    }
+
+    override fun stopTimerFinishedNotification() {
+        // add work request
+        val alarmAcknowledgedBuilder = OneTimeWorkRequestBuilder<AlarmAcknowledgedWorker>()
+            .build()
+
+        //start the work
+        workManager.enqueueUniqueWork(
+            "acknowledge",
+            ExistingWorkPolicy.REPLACE,
+            alarmAcknowledgedBuilder
+        )
     }
 }
