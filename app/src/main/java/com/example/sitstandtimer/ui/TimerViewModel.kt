@@ -132,7 +132,7 @@ class TimerViewModel(
                 // TODO: want the TimerType to change to the right type, and be passed in here so that the finished notification and alarm page are correct
                 timerRepository.startTimerFinishedNotification(type)
                 navigateToPage("Alarm")
-                resetTimer()
+                endTimer()
             }
         }
     }
@@ -161,7 +161,7 @@ class TimerViewModel(
         }
     }
 
-    // TODO: add a full reset to call when end day is pressed, and fix reset so that it correctly sets the next timer, may even be unnecessary?
+    // fully resets the timer and uistate when end day is pressed
     fun resetTimer() {
         timerHelper?.reset()
         _uiState.update { currentState ->
@@ -169,7 +169,24 @@ class TimerViewModel(
                 isTimerRunning = false,
                 isTimerFinished = true,
                 minutesRemaining = uiState.value.intervalLength.toInt().toString(),
-                secondsRemaining = "00"
+                secondsRemaining = "00",
+                intervalsRemaining = uiState.value.numberOfIntervals,
+                isTimeToScanNFC = false,
+                hadLunch = false,
+                isStanding = true
+            )
+        }
+        timerRepository.cancelWorker(TIMER_RUNNING_TAG)
+        timerRepository.stopTimerRunningNotification()
+    }
+
+    // for use with the end of timer running
+    fun endTimer() {
+        timerHelper?.reset()
+        _uiState.update { currentState ->
+            currentState.copy(
+                isTimerFinished = true,
+                isTimerRunning = false,
             )
         }
         timerRepository.cancelWorker(TIMER_RUNNING_TAG)
