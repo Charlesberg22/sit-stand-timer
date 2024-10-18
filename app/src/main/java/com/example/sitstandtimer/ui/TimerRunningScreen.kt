@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.sitstandtimer.data.TimerType
 
 @Composable
 fun TimerRunningScreen(
@@ -28,7 +29,7 @@ fun TimerRunningScreen(
     onSettingsButtonClicked: () -> Unit,
     isStanding: Boolean,
     hadLunch: Boolean,
-    onBreak: Boolean,
+    timerType: TimerType,
     modifier: Modifier = Modifier
 ) {
     val timeToBreak = 30
@@ -44,7 +45,13 @@ fun TimerRunningScreen(
         )
         Spacer(modifier = Modifier.height(32.dp))
         Text(
-            text = "You should be ${if (onBreak) "on a break" else if (isStanding) "standing" else "sitting"}",
+            text = when (timerType) {
+                TimerType.BREAK -> "You should be on a break"
+                TimerType.SIT -> "You should be sitting"
+                TimerType.STAND -> "You should be standing"
+                TimerType.LUNCH -> "You should be on lunch"
+                TimerType.SNOOZE -> "Variable"
+            },
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.height(16.dp))
@@ -57,13 +64,19 @@ fun TimerRunningScreen(
             modifier = Modifier
         ) {
             Text(
-                text = "${if (onBreak) "Return" else if (isStanding) "Sit" else "Stand"} early",
+                text = when (timerType) {
+                    TimerType.BREAK -> "Return early"
+                    TimerType.SIT -> "Stand early"
+                    TimerType.STAND -> "Sit early"
+                    TimerType.LUNCH -> "Return early"
+                    TimerType.SNOOZE -> "Variable"
+                },
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold
             )
         }
         Spacer(modifier = Modifier.height(24.dp))
-        if (!onBreak) {
+        if (timerType == TimerType.SIT || timerType == TimerType.STAND) {
             Row(
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 modifier = Modifier.width(280.dp)

@@ -16,8 +16,8 @@ class TimerFinishedWorker(
 
     override suspend fun doWork(): Result {
         return try {
-            //mediaPlayerHelper.prepare()
-            //mediaPlayerHelper.start()
+            mediaPlayerHelper.prepare()
+            mediaPlayerHelper.start()
 
             val timerType = inputData.getString(typeKey)
 
@@ -25,7 +25,7 @@ class TimerFinishedWorker(
 
             Result.success()
         } catch (e: CancellationException) {
-            //mediaPlayerHelper.release()
+            mediaPlayerHelper.release()
             timerNotificationHelper.removeTimerFinishedNotification()
             Result.failure()
         }

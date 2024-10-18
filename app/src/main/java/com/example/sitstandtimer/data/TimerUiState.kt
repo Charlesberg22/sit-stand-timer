@@ -16,8 +16,8 @@ data class TimerUiState (
     val timeRemainingInSeconds: Int = (intervalLength * 60).toInt(),
     val minutesRemaining: String = intervalLength.toInt().toString(),
     val secondsRemaining: String = "00",
-    val isTimerRunning: Boolean = false,
-    val isTimerFinished: Boolean = true,
+    val isTimerRunning: Boolean = false, // TODO: assess whether required
+    val isTimerFinished: Boolean = true, // TODO: assess whether required
     val isTimeToScanNFC: Boolean = false,
     val timerType: TimerType = TimerType.STAND
 )
@@ -27,5 +27,5 @@ enum class TimerType(title: String) {
     STAND("stand"),
     BREAK("break"),
     LUNCH("lunch"),
-    SNOOZE("snooze")
+    SNOOZE("snooze") // TODO: I think I need to manage this with a boolean only
 }

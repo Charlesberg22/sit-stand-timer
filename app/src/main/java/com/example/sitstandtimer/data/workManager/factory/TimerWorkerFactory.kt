@@ -29,7 +29,7 @@ class TimerWorkerFactory(
             TimerCancelledWorker::class.java.name ->
                 TimerCancelledWorker(appContext, workerParameters, timerNotificationHelper)
             AlarmAcknowledgedWorker::class.java.name ->
-                AlarmAcknowledgedWorker(appContext, workerParameters, timerNotificationHelper)
+                AlarmAcknowledgedWorker(appContext, workerParameters, timerNotificationHelper, mediaPlayerHelper)
             else -> null
         }
     }

@@ -84,7 +84,7 @@ class TimerViewModel(
         _uiState.update { currentState ->
             currentState.copy(
                 isStanding = !_uiState.value.isStanding,
-                timerType = if (_uiState.value.isStanding) TimerType.STAND else TimerType.SIT
+                timerType = if (_uiState.value.isStanding) TimerType.SIT else TimerType.STAND
             )
         }
     }
@@ -127,6 +127,15 @@ class TimerViewModel(
                             timerType = if (_uiState.value.isStanding) TimerType.SIT else TimerType.STAND
                         )
                     }
+                    if (_uiState.value.intervalsRemaining < 1) {
+                        _uiState.update { currentState ->
+                            currentState.copy(
+                                timerType = TimerType.BREAK,
+                                intervalsRemaining = uiState.value.numberOfIntervals
+
+                            )
+                        }
+                    }
                 }
                 val type = _uiState.value.timerType.name
                 // TODO: want the TimerType to change to the right type, and be passed in here so that the finished notification and alarm page are correct
@@ -143,7 +152,7 @@ class TimerViewModel(
         _uiState.update { currentState ->
             currentState.copy(
                 isTimerRunning = true,
-                minutesRemaining = uiState.value.intervalLength.toInt().toString()
+                minutesRemaining = uiState.value.intervalLength.toInt().toString() // TODO update starting time shown
             )
         }
         if (_uiState.value.isTimerFinished) {
@@ -173,7 +182,8 @@ class TimerViewModel(
                 intervalsRemaining = uiState.value.numberOfIntervals,
                 isTimeToScanNFC = false,
                 hadLunch = false,
-                isStanding = true
+                isStanding = true,
+                timerType = TimerType.STAND
             )
         }
         timerRepository.cancelWorker(TIMER_RUNNING_TAG)

@@ -102,7 +102,7 @@ fun TimerApp(
                         },
                     isStanding = uiState.isStanding,
                     hadLunch = uiState.hadLunch,
-                    onBreak = false,
+                    timerType = uiState.timerType,
                     modifier = Modifier
                         .fillMaxSize()
                 )
