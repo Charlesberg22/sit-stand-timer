@@ -1,5 +1,7 @@
 package com.example.sitstandtimer.ui
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
@@ -14,6 +16,9 @@ import com.example.sitstandtimer.data.UserPreferenceRepository
 import com.example.sitstandtimer.data.workManager.worker.TIMER_RUNNING_TAG
 import com.example.sitstandtimer.utils.TimerHelper
 import com.example.sitstandtimer.utils.combine
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -21,7 +26,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
+import kotlin.math.roundToInt
 
+@RequiresApi(Build.VERSION_CODES.O)
 class TimerViewModel(
     private val userPreferenceRepository: UserPreferenceRepository,
     private val timerRepository: TimerRepository,
@@ -92,13 +101,12 @@ class TimerViewModel(
     private var timerHelper: TimerHelper? = null
 
     fun setTimer() {
-        timerRepository.stopTimerFinishedNotification() // TODO: consider adding a cancel sound to this function for the buzzer stuff
+        timerRepository.stopTimerFinishedNotification()
         val duration: Int =
             when (uiState.value.timerType) {
                 TimerType.STAND, TimerType.SIT -> uiState.value.intervalLength.toInt() * 60
                 TimerType.BREAK -> uiState.value.breakLength.toInt() * 60
                 TimerType.LUNCH -> uiState.value.lunchLength.toInt() * 60
-                TimerType.SNOOZE -> uiState.value.snoozeLength.toInt() * 60
             }
 
         timerHelper = object : TimerHelper(durationInSeconds = duration) {
@@ -106,6 +114,7 @@ class TimerViewModel(
                 _uiState.update { currentState ->
                     var minutes = (remainingTime / 60).toString()
                     var seconds = (remainingTime % 60).toString()
+                    val timeToBreak = (remainingTime.toFloat() / 60 + (uiState.value.intervalsRemaining - 1) * uiState.value.intervalLength).roundToInt().toString()
                     if (minutes.length == 1) minutes = "0$minutes"
                     if (seconds.length == 1) seconds = "0$seconds"
 
@@ -113,6 +122,7 @@ class TimerViewModel(
                         timeRemainingInSeconds = remainingTime,
                         minutesRemaining = minutes,
                         secondsRemaining = seconds,
+                        timeToBreak = timeToBreak,
                         isTimerRunning = true
                     )
                 }
@@ -152,7 +162,13 @@ class TimerViewModel(
         _uiState.update { currentState ->
             currentState.copy(
                 isTimerRunning = true,
-                minutesRemaining = uiState.value.intervalLength.toInt().toString() // TODO update starting time shown
+                minutesRemaining =
+                when (uiState.value.timerType) {
+                    TimerType.SIT, TimerType.STAND -> uiState.value.intervalLength.toInt().toString()
+                    TimerType.BREAK -> uiState.value.breakLength.toInt().toString()
+                    TimerType.LUNCH -> uiState.value.lunchLength.toInt().toString()
+                },
+                timeToBreak = (uiState.value.intervalLength * uiState.value.intervalsRemaining).toInt().toString()
             )
         }
         if (_uiState.value.isTimerFinished) {
@@ -221,4 +237,27 @@ class TimerViewModel(
             )
         }
     }
+
+    // To update the time on the start screen
+    init {
+        CoroutineScope(Dispatchers.IO).launch {
+            updateTime()
+            delay(60000 - System.currentTimeMillis() % 60000)
+            while (true) {
+                updateTime()
+                delay(60000)
+            }
+        }
+    }
+
+    // Utility function to get the formatted current time
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun updateTime(){
+        val currentTime = LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm"))
+        _uiState.update { currentState ->
+            currentState.copy(currentTime = currentTime)
+        }
+    }
+
+
 }

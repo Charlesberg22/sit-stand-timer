@@ -30,11 +30,10 @@ fun TimerRunningScreen(
     isStanding: Boolean,
     hadLunch: Boolean,
     timerType: TimerType,
+    timeToBreak: String,
     modifier: Modifier = Modifier
 ) {
-    val timeToBreak = 30
-
-    Column(
+        Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -50,7 +49,6 @@ fun TimerRunningScreen(
                 TimerType.SIT -> "You should be sitting"
                 TimerType.STAND -> "You should be standing"
                 TimerType.LUNCH -> "You should be on lunch"
-                TimerType.SNOOZE -> "Variable"
             },
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold)
@@ -69,7 +67,6 @@ fun TimerRunningScreen(
                     TimerType.SIT -> "Stand early"
                     TimerType.STAND -> "Sit early"
                     TimerType.LUNCH -> "Return early"
-                    TimerType.SNOOZE -> "Variable"
                 },
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold

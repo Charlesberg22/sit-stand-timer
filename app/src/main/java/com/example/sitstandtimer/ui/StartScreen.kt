@@ -4,9 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
@@ -18,9 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.sitstandtimer.ui.theme.SitStandTimerTheme
 
 @Composable
 fun StartScreen(
@@ -28,6 +24,7 @@ fun StartScreen(
     onSwitchBetweenSitAndStand: (Boolean) -> Unit,
     onSettingsButtonClicked: () -> Unit,
     isStanding: Boolean,
+    currentTime: String,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -36,7 +33,7 @@ fun StartScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(modifier = Modifier.height(160.dp))
-        Text(text = "09:00", style = MaterialTheme.typography.displayLarge)
+        Text(text = currentTime, style = MaterialTheme.typography.displayLarge)
         Spacer(modifier = Modifier.height(64.dp))
         Button(
             onClick = onStartButtonClicked,
@@ -80,18 +77,18 @@ fun StartScreen(
     }
 }
 
-@Preview (showBackground = true)
-@Composable
-fun StartScreenPreview() {
-    SitStandTimerTheme{
-        StartScreen(
-            onStartButtonClicked = {},
-            onSwitchBetweenSitAndStand = {},
-            onSettingsButtonClicked = {},
-            isStanding = true,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(8.dp)
-        )
-    }
-}
+//@Preview (showBackground = true)
+//@Composable
+//fun StartScreenPreview() {
+//    SitStandTimerTheme{
+//        StartScreen(
+//            onStartButtonClicked = {},
+//            onSwitchBetweenSitAndStand = {},
+//            onSettingsButtonClicked = {},
+//            isStanding = true,
+//            modifier = Modifier
+//                .fillMaxSize()
+//                .padding(8.dp)
+//        )
+//    }
+//}

@@ -38,7 +38,6 @@ fun AlarmScreen(
                 TimerType.STAND -> "Time to stand"
                 TimerType.SIT -> "Time to sit"
                 TimerType.BREAK -> "Time to take a break"
-                TimerType.SNOOZE -> "do the opposite thing I guess"
                 TimerType.LUNCH -> "Time for lunch"
             },
             style = MaterialTheme.typography.displaySmall

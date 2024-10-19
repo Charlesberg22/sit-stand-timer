@@ -11,11 +11,13 @@ data class TimerUiState (
     val snoozeLength: Float = 15F,
 
     // variables that aren't settings
+    val currentTime: String = "",
     val intervalsRemaining: Int = numberOfIntervals,
     val hadLunch: Boolean = false,
     val timeRemainingInSeconds: Int = (intervalLength * 60).toInt(),
     val minutesRemaining: String = intervalLength.toInt().toString(),
     val secondsRemaining: String = "00",
+    val timeToBreak: String = (intervalLength * numberOfIntervals).toInt().toString(),
     val isTimerRunning: Boolean = false, // TODO: assess whether required
     val isTimerFinished: Boolean = true, // TODO: assess whether required
     val isTimeToScanNFC: Boolean = false,
@@ -27,5 +29,5 @@ enum class TimerType(title: String) {
     STAND("stand"),
     BREAK("break"),
     LUNCH("lunch"),
-    SNOOZE("snooze") // TODO: I think I need to manage this with a boolean only
+    //SNOOZE("snooze") // TODO: I think I need to manage this with a boolean only
 }

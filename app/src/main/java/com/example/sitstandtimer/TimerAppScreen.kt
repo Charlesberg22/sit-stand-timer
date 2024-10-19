@@ -1,6 +1,8 @@
 package com.example.sitstandtimer
 
+import android.os.Build
 import androidx.activity.compose.BackHandler
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -29,6 +31,7 @@ enum class TimerAppScreen(val deepLink: NavDeepLink) {
     Settings(navDeepLink { uriPattern = "https://www.sitstandtimer.com/Settings" })
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun TimerApp(
     viewModel: TimerViewModel = viewModel(
@@ -75,6 +78,7 @@ fun TimerApp(
                         navController.navigate(TimerAppScreen.Settings.name)
                     },
                     isStanding = uiState.isStanding,
+                    currentTime = uiState.currentTime,
                     modifier = Modifier
                         .fillMaxSize()
                 )
@@ -99,10 +103,11 @@ fun TimerApp(
                     },
                     onSettingsButtonClicked = {
                         navController.navigate(TimerAppScreen.Settings.name)
-                        },
+                    },
                     isStanding = uiState.isStanding,
                     hadLunch = uiState.hadLunch,
                     timerType = uiState.timerType,
+                    timeToBreak = uiState.timeToBreak,
                     modifier = Modifier
                         .fillMaxSize()
                 )
