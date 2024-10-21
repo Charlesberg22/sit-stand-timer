@@ -54,7 +54,7 @@ fun TimerRunningScreen(
             fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = "Time to next break: $timeToBreak min"
+            text = if (timerType == TimerType.SIT || timerType == TimerType.STAND) "Time to next break: $timeToBreak min" else ""
         )
         Spacer(modifier = Modifier.height(32.dp))
         Button(
@@ -95,7 +95,7 @@ fun TimerRunningScreen(
                     modifier = Modifier
                 ) {
                     Text(
-                        text = "Pause",
+                        text = "Break",
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold
                     )

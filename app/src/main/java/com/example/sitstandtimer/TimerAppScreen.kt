@@ -70,7 +70,7 @@ fun TimerApp(
                 StartScreen(
                     onStartButtonClicked = {
                         viewModel.setTimer()
-                        viewModel.startTimer(uiState.timerType)
+                        viewModel.startTimer()
                         navController.navigate(TimerAppScreen.Timer.name)
                     },
                     onSwitchBetweenSitAndStand = {viewModel.setStandingOrSitting()},
@@ -94,9 +94,15 @@ fun TimerApp(
                 TimerRunningScreen(
                     minutesRemaining = uiState.minutesRemaining,
                     secondsRemaining = uiState.secondsRemaining,
-                    onLunchButtonClicked = {},
-                    onPauseButtonClicked = {},
-                    onSwapButtonClicked = {},
+                    onLunchButtonClicked = {
+                        viewModel.startLunch()
+                    },
+                    onPauseButtonClicked = {
+                        viewModel.startManualBreak()
+                    },
+                    onSwapButtonClicked = {
+                        viewModel.swapTimerType()
+                    },
                     onEndButtonClicked = {
                         viewModel.resetTimer()
                         navController.popBackStack(TimerAppScreen.Start.name, inclusive = false)
@@ -126,11 +132,11 @@ fun TimerApp(
                     },
                     onAcknowledgeClicked = {
                         viewModel.setTimer()
-                        viewModel.startTimer(uiState.timerType)
+                        viewModel.startTimer()
                         navController.popBackStack(TimerAppScreen.Timer.name, inclusive = false)
                     },
                     onEndButtonClicked = {
-                        /*TODO set up timer and viewmodel stuff*/
+                        viewModel.resetTimer()
                         navController.popBackStack(TimerAppScreen.Start.name, inclusive = false)
                     },
                     timerType = uiState.timerType,

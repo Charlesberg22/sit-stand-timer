@@ -23,7 +23,7 @@ abstract class TimerHelper(
             job = GlobalScope.launch {
                 while (remainingTime > 0) {
                     delay(1000)
-                    remainingTime -= 1
+                    remainingTime--
                     onTimerTick(remainingTime)
                 }
                 onTimerFinish()

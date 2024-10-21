@@ -61,7 +61,7 @@ class TimerNotificationHelper(
                 when (type) {
                     "STAND" -> "You should be standing"
                     "SIT" -> "You should be sitting"
-                    "BREAK" -> "You should be on break"
+                    "BREAK" -> "You should be on a break"
                     "LUNCH" -> "You should be having lunch"
                     else -> "Error: I don't know what you should be doing"
                 }
@@ -69,7 +69,6 @@ class TimerNotificationHelper(
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setContentIntent(openTimerPendingIntent)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .setAutoCancel(true)
             .setOngoing(true)
 
     @SuppressLint("MissingPermission")
@@ -112,7 +111,7 @@ class TimerNotificationHelper(
                 when (type) {
                 "STAND" -> "Time to stand"
                 "SIT" -> "Time to sit"
-                "BREAK" -> "Time to have a break"
+                "BREAK" -> "Time to take a break"
                 else -> "Error: I don't know what it's time for"
             } )
             .setFullScreenIntent(openAlarmPendingIntent, true)

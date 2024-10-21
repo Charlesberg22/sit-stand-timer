@@ -49,25 +49,29 @@ fun AlarmScreen(
             modifier = Modifier.height(96.dp).width(204.dp)
         ) {
             Text(
-                text = if (isTimeToScanNfc) "Scan ${if (onBreak) "desk NFC" else "remote NFC"}" else "Acknowledge",
+                text = if (isTimeToScanNfc) "Scan ${if (timerType == TimerType.LUNCH || timerType == TimerType.BREAK) "desk NFC" else "remote NFC"}" else "Acknowledge",
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold
             )
         }
         Spacer(modifier = Modifier.height(48.dp))
-        Button(
-            onClick = onPauseButtonClicked,
-            modifier = Modifier.width(204.dp)
-        ) {
-            Text(
-                text = if (onBreak) "Ceebs work" else "I'm in the zone",
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold
-            )
+        if (isTimeToScanNfc) {
+            Button(
+                onClick = onPauseButtonClicked,
+                modifier = Modifier.width(204.dp)
+            ) {
+                Text(
+                    text = if (timerType == TimerType.BREAK || timerType == TimerType.LUNCH) "Ceebs work" else "I'm in the zone",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        } else {
+            Spacer(modifier = Modifier.height(48.dp))
         }
         Spacer(modifier = Modifier.height(32.dp))
-        if (!onBreak) {
-            // TODO: fix this button to have different length options, for now default
+        if (isTimeToScanNfc && (timerType == TimerType.SIT || timerType == TimerType.STAND)) {
+            // TODO: update this button to have different length options, for now default
             Button(
                 onClick = onPauseButtonClicked,
                 modifier = Modifier.width(204.dp)

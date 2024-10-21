@@ -28,7 +28,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
-import kotlin.math.roundToInt
+import kotlin.math.ceil
 
 @RequiresApi(Build.VERSION_CODES.O)
 class TimerViewModel(
@@ -98,12 +98,53 @@ class TimerViewModel(
         }
     }
 
+    fun swapTimerType() {
+        timerRepository.stopTimerRunningNotification()
+        if (_uiState.value.timerType == TimerType.SIT || _uiState.value.timerType == TimerType.STAND) {
+            setStandingOrSitting()
+            timerRepository.startTimerRunningNotification(_uiState.value.timerType.name)
+        } else {
+            endTimer()
+            _uiState.update { currentState ->
+                currentState.copy(
+                    timerType = if (_uiState.value.isStanding) TimerType.STAND else TimerType.SIT
+                )
+            }
+            setTimer()
+            startTimer()
+        }
+
+    }
+
+    fun startManualBreak() {
+        endTimer()
+        _uiState.update { currentState ->
+            currentState.copy(
+                timerType = TimerType.BREAK
+            )
+        }
+        setTimer()
+        startTimer()
+    }
+
+    fun startLunch() {
+        endTimer()
+        _uiState.update { currentState ->
+            currentState.copy(
+                timerType = TimerType.LUNCH,
+                hadLunch = true
+            )
+        }
+        setTimer()
+        startTimer()
+    }
+
     private var timerHelper: TimerHelper? = null
 
     fun setTimer() {
         timerRepository.stopTimerFinishedNotification()
         val duration: Int =
-            when (uiState.value.timerType) {
+            when (_uiState.value.timerType) {
                 TimerType.STAND, TimerType.SIT -> uiState.value.intervalLength.toInt() * 60
                 TimerType.BREAK -> uiState.value.breakLength.toInt() * 60
                 TimerType.LUNCH -> uiState.value.lunchLength.toInt() * 60
@@ -114,7 +155,7 @@ class TimerViewModel(
                 _uiState.update { currentState ->
                     var minutes = (remainingTime / 60).toString()
                     var seconds = (remainingTime % 60).toString()
-                    val timeToBreak = (remainingTime.toFloat() / 60 + (uiState.value.intervalsRemaining - 1) * uiState.value.intervalLength).roundToInt().toString()
+                    val timeToBreak = ceil((remainingTime.toFloat() / 60 + (uiState.value.intervalsRemaining - 1) * uiState.value.intervalLength)).toInt().toString()
                     if (minutes.length == 1) minutes = "0$minutes"
                     if (seconds.length == 1) seconds = "0$seconds"
 
@@ -129,7 +170,7 @@ class TimerViewModel(
             }
 
             override fun onTimerFinish() {
-                if (uiState.value.timerType == TimerType.SIT || uiState.value.timerType == TimerType.STAND) {
+                if (_uiState.value.timerType == TimerType.SIT || _uiState.value.timerType == TimerType.STAND) {
                     _uiState.update { currentState ->
                         currentState.copy(
                             intervalsRemaining = uiState.value.intervalsRemaining - 1,
@@ -146,9 +187,14 @@ class TimerViewModel(
                             )
                         }
                     }
+                } else if (_uiState.value.timerType == TimerType.BREAK || _uiState.value.timerType == TimerType.LUNCH) {
+                    _uiState.update { currentState ->
+                        currentState.copy(
+                            timerType = if (_uiState.value.isStanding) TimerType.STAND else TimerType.SIT
+                        )
+                    }
                 }
                 val type = _uiState.value.timerType.name
-                // TODO: want the TimerType to change to the right type, and be passed in here so that the finished notification and alarm page are correct
                 timerRepository.startTimerFinishedNotification(type)
                 navigateToPage("Alarm")
                 endTimer()
@@ -156,18 +202,19 @@ class TimerViewModel(
         }
     }
 
-    fun startTimer(timerType: TimerType) {
+    fun startTimer() {
         timerHelper?.start()
-        val type = uiState.value.timerType.name
+        val type = _uiState.value.timerType.name
         _uiState.update { currentState ->
             currentState.copy(
                 isTimerRunning = true,
                 minutesRemaining =
-                when (uiState.value.timerType) {
+                when (_uiState.value.timerType) {
                     TimerType.SIT, TimerType.STAND -> uiState.value.intervalLength.toInt().toString()
                     TimerType.BREAK -> uiState.value.breakLength.toInt().toString()
                     TimerType.LUNCH -> uiState.value.lunchLength.toInt().toString()
                 },
+                secondsRemaining = "00",
                 timeToBreak = (uiState.value.intervalLength * uiState.value.intervalsRemaining).toInt().toString()
             )
         }
