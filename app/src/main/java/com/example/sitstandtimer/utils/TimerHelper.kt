@@ -33,11 +33,6 @@ abstract class TimerHelper(
         }
     }
 
-    fun pause() {
-        job?.cancel()
-        isTimerPaused = true
-    }
-
     fun reset() {
         job?.cancel()
         remainingTime = durationInSeconds

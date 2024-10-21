@@ -139,12 +139,24 @@ class TimerViewModel(
         startTimer()
     }
 
+    fun snoozeTimer() {
+        _uiState.update { currentState ->
+            currentState.copy(
+                onSnooze = true,
+            )
+        }
+        setTimer()
+        startTimer()
+    }
+
     private var timerHelper: TimerHelper? = null
 
     fun setTimer() {
         timerRepository.stopTimerFinishedNotification()
         val duration: Int =
-            when (_uiState.value.timerType) {
+            if (uiState.value.onSnooze) {
+                uiState.value.snoozeLength.toInt() * 60
+            } else when (_uiState.value.timerType) {
                 TimerType.STAND, TimerType.SIT -> uiState.value.intervalLength.toInt() * 60
                 TimerType.BREAK -> uiState.value.breakLength.toInt() * 60
                 TimerType.LUNCH -> uiState.value.lunchLength.toInt() * 60
@@ -164,7 +176,6 @@ class TimerViewModel(
                         minutesRemaining = minutes,
                         secondsRemaining = seconds,
                         timeToBreak = timeToBreak,
-                        isTimerRunning = true
                     )
                 }
             }
@@ -175,22 +186,25 @@ class TimerViewModel(
                         currentState.copy(
                             intervalsRemaining = uiState.value.intervalsRemaining - 1,
                             isStanding = !uiState.value.isStanding,
-                            timerType = if (_uiState.value.isStanding) TimerType.SIT else TimerType.STAND
+                            timerType = if (_uiState.value.isStanding) TimerType.SIT else TimerType.STAND,
+                            onSnooze = false
                         )
                     }
                     if (_uiState.value.intervalsRemaining < 1) {
                         _uiState.update { currentState ->
                             currentState.copy(
                                 timerType = TimerType.BREAK,
-                                intervalsRemaining = uiState.value.numberOfIntervals
-
+                                intervalsRemaining = uiState.value.numberOfIntervals,
+                                isTimeToScanNFC = true,
                             )
                         }
                     }
                 } else if (_uiState.value.timerType == TimerType.BREAK || _uiState.value.timerType == TimerType.LUNCH) {
                     _uiState.update { currentState ->
                         currentState.copy(
-                            timerType = if (_uiState.value.isStanding) TimerType.STAND else TimerType.SIT
+                            timerType = if (_uiState.value.isStanding) TimerType.STAND else TimerType.SIT,
+                            isTimeToScanNFC = true,
+                            onSnooze = false
                         )
                     }
                 }
@@ -207,30 +221,20 @@ class TimerViewModel(
         val type = _uiState.value.timerType.name
         _uiState.update { currentState ->
             currentState.copy(
-                isTimerRunning = true,
                 minutesRemaining =
-                when (_uiState.value.timerType) {
+                if (uiState.value.onSnooze) {
+                    uiState.value.snoozeLength.toInt().toString()
+                } else when (_uiState.value.timerType) {
                     TimerType.SIT, TimerType.STAND -> uiState.value.intervalLength.toInt().toString()
                     TimerType.BREAK -> uiState.value.breakLength.toInt().toString()
                     TimerType.LUNCH -> uiState.value.lunchLength.toInt().toString()
                 },
                 secondsRemaining = "00",
-                timeToBreak = (uiState.value.intervalLength * uiState.value.intervalsRemaining).toInt().toString()
+                timeToBreak = (uiState.value.intervalLength * uiState.value.intervalsRemaining).toInt().toString(),
+                isTimeToScanNFC = false
             )
         }
-        if (_uiState.value.isTimerFinished) {
-            timerRepository.startTimerRunningNotification(type)
-            _uiState.update { currentState ->
-                currentState.copy(isTimerFinished = false)
-            }
-        }
-    }
-
-    fun pauseTimer() {
-        timerHelper?.pause()
-        _uiState.update { currentState ->
-            currentState.copy(isTimerRunning = false)
-        }
+        timerRepository.startTimerRunningNotification(type)
     }
 
     // fully resets the timer and uistate when end day is pressed
@@ -238,8 +242,6 @@ class TimerViewModel(
         timerHelper?.reset()
         _uiState.update { currentState ->
             currentState.copy(
-                isTimerRunning = false,
-                isTimerFinished = true,
                 minutesRemaining = uiState.value.intervalLength.toInt().toString(),
                 secondsRemaining = "00",
                 intervalsRemaining = uiState.value.numberOfIntervals,
@@ -256,12 +258,6 @@ class TimerViewModel(
     // for use with the end of timer running
     fun endTimer() {
         timerHelper?.reset()
-        _uiState.update { currentState ->
-            currentState.copy(
-                isTimerFinished = true,
-                isTimerRunning = false,
-            )
-        }
         timerRepository.cancelWorker(TIMER_RUNNING_TAG)
         timerRepository.stopTimerRunningNotification()
     }

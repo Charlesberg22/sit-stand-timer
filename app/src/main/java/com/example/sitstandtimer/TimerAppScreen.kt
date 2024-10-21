@@ -90,7 +90,6 @@ fun TimerApp(
                 BackHandler(true) {
                     // do nothing when back button pressed
                 }
-                // TODO: update this screen to accurately match the new state management variable TimerType
                 TimerRunningScreen(
                     minutesRemaining = uiState.minutesRemaining,
                     secondsRemaining = uiState.secondsRemaining,
@@ -110,7 +109,6 @@ fun TimerApp(
                     onSettingsButtonClicked = {
                         navController.navigate(TimerAppScreen.Settings.name)
                     },
-                    isStanding = uiState.isStanding,
                     hadLunch = uiState.hadLunch,
                     timerType = uiState.timerType,
                     timeToBreak = uiState.timeToBreak,
@@ -127,7 +125,7 @@ fun TimerApp(
                 }
                 AlarmScreen(
                     onPauseButtonClicked = {
-                        /*TODO set up timer and viewmodel stuff*/
+                        viewModel.snoozeTimer()
                         navController.popBackStack(TimerAppScreen.Timer.name, inclusive = false)
                     },
                     onAcknowledgeClicked = {
@@ -140,8 +138,7 @@ fun TimerApp(
                         navController.popBackStack(TimerAppScreen.Start.name, inclusive = false)
                     },
                     timerType = uiState.timerType,
-                    isTimeToScanNfc = false,
-                    onBreak = true,
+                    isTimeToScanNfc = uiState.isTimeToScanNFC,
                     modifier = Modifier
                         .fillMaxSize()
                 )

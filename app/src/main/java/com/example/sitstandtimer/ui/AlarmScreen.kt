@@ -22,7 +22,6 @@ fun AlarmScreen(
     onAcknowledgeClicked: () -> Unit,
     onEndButtonClicked: () -> Unit,
     timerType: TimerType,
-    onBreak: Boolean,
     isTimeToScanNfc: Boolean,
     modifier: Modifier = Modifier
 
@@ -49,7 +48,7 @@ fun AlarmScreen(
             modifier = Modifier.height(96.dp).width(204.dp)
         ) {
             Text(
-                text = if (isTimeToScanNfc) "Scan ${if (timerType == TimerType.LUNCH || timerType == TimerType.BREAK) "desk NFC" else "remote NFC"}" else "Acknowledge",
+                text = if (isTimeToScanNfc) "Scan ${if (timerType == TimerType.LUNCH || timerType == TimerType.BREAK) "remote NFC" else "desk NFC"}" else "Acknowledge",
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold
             )
@@ -70,7 +69,7 @@ fun AlarmScreen(
             Spacer(modifier = Modifier.height(48.dp))
         }
         Spacer(modifier = Modifier.height(32.dp))
-        if (isTimeToScanNfc && (timerType == TimerType.SIT || timerType == TimerType.STAND)) {
+        if (false)/*(isTimeToScanNfc && (timerType == TimerType.SIT || timerType == TimerType.STAND))*/ {
             // TODO: update this button to have different length options, for now default
             Button(
                 onClick = onPauseButtonClicked,

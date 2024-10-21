@@ -27,7 +27,6 @@ fun TimerRunningScreen(
     onSwapButtonClicked: () -> Unit,
     onEndButtonClicked: () -> Unit,
     onSettingsButtonClicked: () -> Unit,
-    isStanding: Boolean,
     hadLunch: Boolean,
     timerType: TimerType,
     timeToBreak: String,

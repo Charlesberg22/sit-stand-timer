@@ -18,10 +18,9 @@ data class TimerUiState (
     val minutesRemaining: String = intervalLength.toInt().toString(),
     val secondsRemaining: String = "00",
     val timeToBreak: String = (intervalLength * numberOfIntervals).toInt().toString(),
-    val isTimerRunning: Boolean = false, // TODO: assess whether required
-    val isTimerFinished: Boolean = true, // TODO: assess whether required
     val isTimeToScanNFC: Boolean = false,
-    val timerType: TimerType = TimerType.STAND
+    val timerType: TimerType = TimerType.STAND,
+    val onSnooze: Boolean = false,
 )
 
 enum class TimerType(title: String) {
