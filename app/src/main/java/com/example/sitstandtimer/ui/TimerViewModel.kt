@@ -240,7 +240,7 @@ class TimerViewModel(
                     }
                 }
                 val type = _uiState.value.timerType.name
-                timerRepository.startTimerFinishedNotification(type) //TODO: Want to wake the screen when it's done
+                timerRepository.startTimerFinishedNotification(type)
                 navigateToPage("Alarm")
                 endTimer()
             }

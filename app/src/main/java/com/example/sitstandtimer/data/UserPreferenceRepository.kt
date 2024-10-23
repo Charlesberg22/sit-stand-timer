@@ -10,7 +10,6 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import java.io.IOException
 
@@ -145,9 +144,5 @@ class UserPreferenceRepository(
                 preferences[REMOTE_NFC_TAG] = tag
             }
         }
-    }
-
-    suspend fun getRemoteNfcTag(): String {
-        return dataStore.data.first().toString()
     }
 }

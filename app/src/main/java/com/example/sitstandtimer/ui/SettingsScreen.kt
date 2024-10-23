@@ -41,7 +41,8 @@ fun SettingsScreen(
     viewModel: TimerViewModel,
     modifier: Modifier = Modifier
 ) {
-    var showNfcDialog by rememberSaveable { mutableStateOf(false) }
+    var showNfcSetDialog by rememberSaveable { mutableStateOf(false) }
+    var showNfcCheckDialog by rememberSaveable { mutableStateOf(false) }
     var setRemoteOrDeskNfc by rememberSaveable { mutableStateOf(true) }
 
     Column(
@@ -112,21 +113,29 @@ fun SettingsScreen(
         // TODO: add restore to defaults
         NfcSetting(
             description = "Set remote NFC card",
-            onClick = {
-                showNfcDialog = true
+            onSetClicked = {
+                showNfcSetDialog = true
+                setRemoteOrDeskNfc = true
+            },
+            onCheckClicked = {
+                showNfcCheckDialog = true
                 setRemoteOrDeskNfc = true
             }
         )
         NfcSetting(
             description = "Set desk NFC card",
-            onClick = {
-                showNfcDialog = true
+            onSetClicked = {
+                showNfcSetDialog = true
+                setRemoteOrDeskNfc = false
+            },
+            onCheckClicked = {
+                showNfcCheckDialog = true
                 setRemoteOrDeskNfc = false
             }
         )
-        if (showNfcDialog) {
-            NfcDialogContent(
-                onDialogDismiss = { showNfcDialog = false },
+        if (showNfcSetDialog) {
+            NfcSetDialogContent(
+                onDialogDismiss = { showNfcSetDialog = false },
                 saveNfcTag = {
                     viewModel.saveNfcTag(
                         tag = it,
@@ -138,6 +147,16 @@ fun SettingsScreen(
                     } else {
                         uiState.deskNfcTag
                     }
+            )
+        }
+        if (showNfcCheckDialog) {
+            NfcCheckDialogContent(
+                onDialogDismiss = { showNfcCheckDialog = false },
+                isTagStored = {
+                    viewModel.isTagStored(
+                        tag = it,
+                        location = if (setRemoteOrDeskNfc) "remote" else "desk"
+                    )},
             )
         }
     }
@@ -166,7 +185,9 @@ fun SliderSetting(
             onValueChange = onSliderChange,
             steps = steps,
             valueRange = valueRange,
-            modifier = Modifier.weight(1f).padding(start = 16.dp)
+            modifier = Modifier
+                .weight(1f)
+                .padding(start = 16.dp)
         )
         Text(
             text = "%.0f".format(sliderValue),
@@ -184,7 +205,8 @@ fun SliderSetting(
 fun NfcSetting(
     modifier: Modifier = Modifier,
     description: String,
-    onClick: () -> Unit
+    onSetClicked: () -> Unit,
+    onCheckClicked: () -> Unit,
 ) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -196,14 +218,28 @@ fun NfcSetting(
         Text(
             text = description,
             style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.padding(start = 8.dp)
-        )
-        Button(
-            onClick = onClick,
             modifier = Modifier
-                .padding(end = 8.dp)
+                .padding(start = 8.dp)
+                .weight(0.5f)
+        )
+        Row(
+            horizontalArrangement = Arrangement.End,
+            modifier = Modifier
+                .weight(0.5f)
         ) {
-            Text(text = "Set")
+            Button(
+                onClick = onCheckClicked,
+                modifier = Modifier.padding(end = 24.dp)
+            ) {
+                Text(text = "Check")
+            }
+            Button(
+                onClick = onSetClicked,
+                modifier = Modifier
+                    .padding(end = 8.dp)
+            ) {
+                Text(text = "Set")
+            }
         }
     }
     HorizontalDivider(modifier = Modifier)
@@ -211,7 +247,7 @@ fun NfcSetting(
 
 @OptIn(ExperimentalStdlibApi::class)
 @Composable
-fun NfcDialogContent(
+fun NfcSetDialogContent(
     onDialogDismiss: () -> Unit,
     saveNfcTag: (String) -> Unit,
     nfcTag: String,
@@ -225,6 +261,33 @@ fun NfcDialogContent(
         confirmButton = {},
         title = { Text("Scan NFC Tag")},
         text = { Text(nfcTag) }
+    )
+}
+
+@OptIn(ExperimentalStdlibApi::class)
+@Composable
+fun NfcCheckDialogContent(
+    onDialogDismiss: () -> Unit,
+    isTagStored: (String) -> Boolean,
+    modifier: Modifier = Modifier
+) {
+    var isTagCorrect: Boolean? by rememberSaveable { mutableStateOf(null) }
+
+    NfcBroadcastReceiver { tag ->
+        isTagCorrect = isTagStored(tag.id.toHexString())
+    }
+    AlertDialog(
+        onDismissRequest = { onDialogDismiss() },
+        confirmButton = {},
+        title = { Text("Check NFC Tag")},
+        text = { Text(
+            if (isTagCorrect != null) {
+                if (isTagCorrect as Boolean) "This tag matches" else "This tag does not match"
+            } else {
+                "Scan your NFC tag to check"
+            }
+
+        ) }
     )
 }
 
