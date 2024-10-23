@@ -9,6 +9,8 @@ data class TimerUiState (
     val breakLength: Float = 15F,
     val lunchLength: Float = 60F,
     val snoozeLength: Float = 15F,
+    val remoteNfcTag: String = "",
+    val deskNfcTag: String = "",
 
     // variables that aren't settings
     val currentTime: String = "",
@@ -21,6 +23,7 @@ data class TimerUiState (
     val isTimeToScanNFC: Boolean = false,
     val timerType: TimerType = TimerType.STAND,
     val onSnooze: Boolean = false,
+    val showNfcDialog: Boolean = false
 )
 
 enum class TimerType(title: String) {

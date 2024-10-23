@@ -7,6 +7,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.os.PowerManager
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.net.toUri
@@ -69,7 +70,6 @@ class TimerNotificationHelper(
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setContentIntent(openTimerPendingIntent)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .setOngoing(true)
 
     @SuppressLint("MissingPermission")
     fun showTimerRunningNotification(type: String?) =
@@ -117,11 +117,24 @@ class TimerNotificationHelper(
             .setFullScreenIntent(openAlarmPendingIntent, true)
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setAutoCancel(true)
+            .setPriority(NotificationCompat.PRIORITY_MAX)
+            .setCategory(NotificationCompat.CATEGORY_ALARM)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setOngoing(true)
 
     @SuppressLint("MissingPermission")
     fun showTimerFinishedNotification(type: String?) {
         NotificationManagerCompat.from(applicationContext).notify(TIMER_FINISHED_NOTIFICATION_ID, timerFinishedBuilder(type).build())
+    }
+
+    @SuppressLint("Wakelock")
+    fun wakeScreenWhenTimerFinished() {
+        val powerManager = applicationContext.getSystemService(Context.POWER_SERVICE) as PowerManager
+        val wakeLock = powerManager.newWakeLock(
+            PowerManager.SCREEN_DIM_WAKE_LOCK or PowerManager.ACQUIRE_CAUSES_WAKEUP,
+            "SitStandTimer:WakeLock"
+        )
+        wakeLock.acquire(3000)
     }
 
 //    fun showTimerRunningNotification() =

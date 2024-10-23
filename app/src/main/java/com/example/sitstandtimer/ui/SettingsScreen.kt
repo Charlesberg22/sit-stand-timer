@@ -1,5 +1,7 @@
 package com.example.sitstandtimer.ui
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -17,14 +20,20 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.sitstandtimer.data.TimerUiState
+import com.example.sitstandtimer.utils.NfcBroadcastReceiver
 
 // TODO: implement NFC capabilities
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun SettingsScreen(
     onBackButtonClick: () -> Unit,
@@ -32,6 +41,9 @@ fun SettingsScreen(
     viewModel: TimerViewModel,
     modifier: Modifier = Modifier
 ) {
+    var showNfcDialog by rememberSaveable { mutableStateOf(false) }
+    var setRemoteOrDeskNfc by rememberSaveable { mutableStateOf(true) }
+
     Column(
         verticalArrangement = Arrangement.SpaceEvenly
     ) {
@@ -100,12 +112,34 @@ fun SettingsScreen(
         // TODO: add restore to defaults
         NfcSetting(
             description = "Set remote NFC card",
-            onClick = {}
+            onClick = {
+                showNfcDialog = true
+                setRemoteOrDeskNfc = true
+            }
         )
         NfcSetting(
             description = "Set desk NFC card",
-            onClick = {}
+            onClick = {
+                showNfcDialog = true
+                setRemoteOrDeskNfc = false
+            }
         )
+        if (showNfcDialog) {
+            NfcDialogContent(
+                onDialogDismiss = { showNfcDialog = false },
+                saveNfcTag = {
+                    viewModel.saveNfcTag(
+                        tag = it,
+                        location = if (setRemoteOrDeskNfc) "remote" else "desk"
+                    )},
+                nfcTag =
+                    if (setRemoteOrDeskNfc) {
+                        uiState.remoteNfcTag
+                    } else {
+                        uiState.deskNfcTag
+                    }
+            )
+        }
     }
 }
 
@@ -173,6 +207,25 @@ fun NfcSetting(
         }
     }
     HorizontalDivider(modifier = Modifier)
+}
+
+@OptIn(ExperimentalStdlibApi::class)
+@Composable
+fun NfcDialogContent(
+    onDialogDismiss: () -> Unit,
+    saveNfcTag: (String) -> Unit,
+    nfcTag: String,
+    modifier: Modifier = Modifier
+) {
+    NfcBroadcastReceiver { tag ->
+        saveNfcTag(tag.id.toHexString())
+    }
+    AlertDialog(
+        onDismissRequest = { onDialogDismiss() },
+        confirmButton = {},
+        title = { Text("Scan NFC Tag")},
+        text = { Text(nfcTag) }
+    )
 }
 
 //@Preview(showBackground = true)

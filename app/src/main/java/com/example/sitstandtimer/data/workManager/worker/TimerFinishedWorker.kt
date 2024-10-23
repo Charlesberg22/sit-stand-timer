@@ -22,6 +22,7 @@ class TimerFinishedWorker(
             val timerType = inputData.getString(typeKey)
 
             timerNotificationHelper.showTimerFinishedNotification(timerType)
+            timerNotificationHelper.wakeScreenWhenTimerFinished()
 
             Result.success()
         } catch (e: CancellationException) {

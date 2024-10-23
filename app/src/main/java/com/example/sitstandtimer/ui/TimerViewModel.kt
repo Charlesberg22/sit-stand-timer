@@ -46,14 +46,18 @@ class TimerViewModel(
         userPreferenceRepository.intervalLength,
         userPreferenceRepository.breakLength,
         userPreferenceRepository.lunchLength,
-        userPreferenceRepository.snoozeLength
-    ) { currentState, numberOfIntervals, intervalLength, breakLength, lunchLength, snoozeLength ->
+        userPreferenceRepository.snoozeLength,
+        userPreferenceRepository.remoteNfcTag,
+        userPreferenceRepository.deskNfcTag
+    ) { currentState, numberOfIntervals, intervalLength, breakLength, lunchLength, snoozeLength, remoteNfcTag, deskNfcTag ->
         currentState.copy(
             numberOfIntervals = numberOfIntervals,
             intervalLength = intervalLength,
             breakLength = breakLength,
             lunchLength = lunchLength,
             snoozeLength = snoozeLength,
+            remoteNfcTag = remoteNfcTag,
+            deskNfcTag = deskNfcTag
         )
     }.stateIn(
         scope = viewModelScope,
@@ -73,6 +77,33 @@ class TimerViewModel(
     // reset navigation after handling
     fun resetNavigation() {
         _navigateTo.value = null
+    }
+
+    fun saveNfcTag(tag: String, location: String = "remote") {
+        viewModelScope.launch {
+            userPreferenceRepository.saveRemoteNfcTag(tag, location)
+        }
+        if (location == "desk") {
+            _uiState.update { currentState ->
+                currentState.copy(
+                    deskNfcTag = tag
+                )
+            }
+        } else {
+            _uiState.update { currentState ->
+                currentState.copy(
+                    remoteNfcTag = tag
+                )
+            }
+        }
+    }
+
+    fun isTagStored(tag: String, location: String = "remote"): Boolean {
+        if (location == "desk") {
+            return uiState.value.deskNfcTag == tag
+        } else {
+            return uiState.value.remoteNfcTag == tag
+        }
     }
 
     // to get user preferences repository dependency of viewmodel sorted
@@ -209,7 +240,7 @@ class TimerViewModel(
                     }
                 }
                 val type = _uiState.value.timerType.name
-                timerRepository.startTimerFinishedNotification(type)
+                timerRepository.startTimerFinishedNotification(type) //TODO: Want to wake the screen when it's done
                 navigateToPage("Alarm")
                 endTimer()
             }
