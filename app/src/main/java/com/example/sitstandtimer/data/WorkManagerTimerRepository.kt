@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.work.Data
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.OutOfQuotaPolicy
 import androidx.work.WorkManager
 import com.example.sitstandtimer.data.workManager.worker.AlarmAcknowledgedWorker
 import com.example.sitstandtimer.data.workManager.worker.TIMER_FINISHED_TAG
@@ -25,6 +26,7 @@ class WorkManagerTimerRepository(context: Context) : TimerRepository {
         val timerRunningBuilder = OneTimeWorkRequestBuilder<TimerRunningWorker>()
             .addTag(tag = TIMER_RUNNING_TAG)
             .setInputData(data.build())
+            .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
             .build()
 
         //start the work
@@ -44,6 +46,7 @@ class WorkManagerTimerRepository(context: Context) : TimerRepository {
         val timerFinishedBuilder = OneTimeWorkRequestBuilder<TimerFinishedWorker>()
             .addTag(tag = TIMER_FINISHED_TAG)
             .setInputData(data.build())
+            .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
             .build()
 
         //start the work

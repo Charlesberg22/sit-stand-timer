@@ -3,9 +3,12 @@ package com.example.sitstandtimer.data.workManager.worker
 import android.annotation.SuppressLint
 import android.content.Context
 import androidx.work.CoroutineWorker
+import androidx.work.ForegroundInfo
 import androidx.work.WorkerParameters
+import com.example.sitstandtimer.utils.TIMER_RUNNING_NOTIFICATION_ID
 import com.example.sitstandtimer.utils.TimerNotificationHelper
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.delay
 
 class TimerRunningWorker(
     context: Context,
@@ -19,7 +22,11 @@ class TimerRunningWorker(
 
             val type = inputData.getString(typeKey)
 
-            timerNotificationHelper.showTimerRunningNotification(type)
+            val notification = timerNotificationHelper.timerRunningBuilder(type)
+
+            setForeground(ForegroundInfo(TIMER_RUNNING_NOTIFICATION_ID, notification))
+
+            delay(60 * 60 * 1000)
 
             Result.success()
         } catch (e: CancellationException) {

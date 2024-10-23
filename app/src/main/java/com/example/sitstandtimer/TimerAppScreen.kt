@@ -18,6 +18,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navDeepLink
+import com.example.sitstandtimer.data.TimerType
 import com.example.sitstandtimer.ui.AlarmScreen
 import com.example.sitstandtimer.ui.SettingsScreen
 import com.example.sitstandtimer.ui.StartScreen
@@ -69,6 +70,7 @@ fun TimerApp(
                 ){
                 StartScreen(
                     onStartButtonClicked = {
+                        viewModel.updateIntervalsAtStart()
                         viewModel.setTimer()
                         viewModel.startTimer()
                         navController.navigate(TimerAppScreen.Timer.name)
@@ -136,6 +138,12 @@ fun TimerApp(
                     onEndButtonClicked = {
                         viewModel.resetTimer()
                         navController.popBackStack(TimerAppScreen.Start.name, inclusive = false)
+                    },
+                    isTagStored = {
+                        viewModel.isTagStored(
+                            tag = it,
+                            location = if (uiState.timerType == TimerType.LUNCH || uiState.timerType == TimerType.BREAK) "remote" else "desk",
+                        )
                     },
                     timerType = uiState.timerType,
                     isTimeToScanNfc = uiState.isTimeToScanNFC,

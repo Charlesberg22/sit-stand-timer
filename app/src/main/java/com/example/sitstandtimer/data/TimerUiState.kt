@@ -30,6 +30,5 @@ enum class TimerType(title: String) {
     SIT("sit"),
     STAND("stand"),
     BREAK("break"),
-    LUNCH("lunch"),
-    //SNOOZE("snooze") // TODO: I think I need to manage this with a boolean only
+    LUNCH("lunch")
 }

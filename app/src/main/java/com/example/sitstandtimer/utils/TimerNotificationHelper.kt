@@ -56,7 +56,7 @@ class TimerNotificationHelper(
         pendingIntentFlags
     )
 
-    private fun timerRunningBuilder(type: String?) =
+    fun timerRunningBuilder(type: String?) =
         NotificationCompat.Builder(applicationContext, TIMER_RUNNING_CHANNEL)
             .setContentTitle(
                 when (type) {
@@ -70,10 +70,11 @@ class TimerNotificationHelper(
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setContentIntent(openTimerPendingIntent)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .build()
 
-    @SuppressLint("MissingPermission")
-    fun showTimerRunningNotification(type: String?) =
-        NotificationManagerCompat.from(applicationContext).notify(TIMER_RUNNING_NOTIFICATION_ID, timerRunningBuilder(type).build())
+//    @SuppressLint("MissingPermission")
+//    fun showTimerRunningNotification(type: String?) =
+//        NotificationManagerCompat.from(applicationContext).notify(TIMER_RUNNING_NOTIFICATION_ID, timerRunningBuilder(type).build())
 
     private fun createTimerFinishedNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

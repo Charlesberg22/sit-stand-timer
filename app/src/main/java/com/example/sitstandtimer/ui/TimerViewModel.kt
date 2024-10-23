@@ -99,10 +99,10 @@ class TimerViewModel(
     }
 
     fun isTagStored(tag: String, location: String = "remote"): Boolean {
-        if (location == "desk") {
-            return uiState.value.deskNfcTag == tag
+        return if (location == "desk") {
+            uiState.value.deskNfcTag == tag
         } else {
-            return uiState.value.remoteNfcTag == tag
+            uiState.value.remoteNfcTag == tag
         }
     }
 
@@ -178,6 +178,14 @@ class TimerViewModel(
         }
         setTimer()
         startTimer()
+    }
+
+    fun updateIntervalsAtStart() {
+        _uiState.update { currentState ->
+            currentState.copy(
+                intervalsRemaining = uiState.value.numberOfIntervals
+            )
+        }
     }
 
     private var timerHelper: TimerHelper? = null
