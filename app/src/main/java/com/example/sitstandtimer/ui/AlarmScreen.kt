@@ -130,8 +130,7 @@ fun NfcDialogContent(
     onDialogDismiss: () -> Unit,
     onAcknowledgeClicked: () -> Unit,
     isTagStored: (String) -> Boolean,
-    location: String,
-    modifier: Modifier = Modifier
+    location: String
 ) {
     var isTagCorrect: Boolean? by rememberSaveable { mutableStateOf(null) }
 

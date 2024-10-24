@@ -16,7 +16,6 @@ import androidx.navigation.NavDeepLink
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navDeepLink
 import com.example.sitstandtimer.data.TimerType
 import com.example.sitstandtimer.ui.AlarmScreen
@@ -40,11 +39,6 @@ fun TimerApp(
     ),
     navController: NavHostController
 ) {
-    val backStackEntry by navController.currentBackStackEntryAsState()
-    val currentScreen = TimerAppScreen.valueOf(
-        backStackEntry?.destination?.route ?: TimerAppScreen.Start.name
-    )
-
     // for navigation by functions in the viewmodel
     val navigateTo by viewModel.navigateTo.collectAsState()
 
