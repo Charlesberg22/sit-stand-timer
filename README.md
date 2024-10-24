@@ -11,10 +11,10 @@ It is intended that while WFH, one would have NFC turned on and silent mode off,
 
 All the timer lengths can be set in settings, and these are saved in a DataStore.
 
-Primarily, the app is built using Jetpack Compose, with display logic in the ViewModel and timer logic held within the TimerHelper class. However, the separation of concerns may not be ideal and the ViewModel does a lot of heavy lifting.
-
 ### Background ###
 
 I made this app as my first real program, after completing CS50 (this will be used as a the final project for it) and the Android Basics with Compose course.
 
 There are undoubtedly some shortcomings, but it was made mostly as a learning experience and because I wanted to use the app myself. If you find said shortcomings, feel free to let me know.
+
+Primarily, the app is built using Jetpack Compose, with display logic in the ViewModel and timer logic held within the TimerHelper class. However, the separation of concerns may not be ideal and the ViewModel does a lot of heavy lifting.
