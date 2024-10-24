@@ -6,6 +6,8 @@ import android.media.MediaPlayer
 
 import android.provider.Settings
 
+// Credit: https://github.com/yassineAbou/Clock
+
 class MediaPlayerHelper(private val applicationContext: Context) {
     private var mediaPlayer: MediaPlayer? = null
 

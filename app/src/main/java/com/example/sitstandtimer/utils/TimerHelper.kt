@@ -6,6 +6,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+//Credit: https://github.com/yassineAbou/Clock
+
 abstract class TimerHelper(
     private val durationInSeconds: Int
 ) {

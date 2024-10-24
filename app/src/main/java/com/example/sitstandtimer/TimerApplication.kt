@@ -12,6 +12,7 @@ import com.example.sitstandtimer.data.UserPreferenceRepository
 import com.example.sitstandtimer.data.workManager.factory.TimerWorkerFactory
 import com.example.sitstandtimer.utils.MediaPlayerHelper
 import com.example.sitstandtimer.utils.TimerNotificationHelper
+import com.example.sitstandtimer.utils.VibrationHelper
 
 class TimerApplication: Application(), Configuration.Provider {
     lateinit var userPreferenceRepository: UserPreferenceRepository
@@ -27,9 +28,10 @@ class TimerApplication: Application(), Configuration.Provider {
         get() {
         val timerNotificationHelper = TimerNotificationHelper(this)
         val mediaPlayerHelper = MediaPlayerHelper(this)
+        val vibrationHelper = VibrationHelper(this)
 
         return Configuration.Builder()
-            .setWorkerFactory(TimerWorkerFactory(timerNotificationHelper, mediaPlayerHelper))
+            .setWorkerFactory(TimerWorkerFactory(timerNotificationHelper, mediaPlayerHelper, vibrationHelper))
             .build()
 
     }

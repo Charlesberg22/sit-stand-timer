@@ -30,6 +30,7 @@ fun AlarmScreen(
     isTagStored: (String) -> Boolean,
     timerType: TimerType,
     isTimeToScanNfc: Boolean,
+    isNfcOn: Boolean,
     modifier: Modifier = Modifier
 
 ) {
@@ -53,7 +54,7 @@ fun AlarmScreen(
         Spacer(modifier = Modifier.height(64.dp))
         Button(
             onClick = {
-                if (isTimeToScanNfc) {
+                if (isTimeToScanNfc && isNfcOn) {
                     showNfcDialog = true
                 } else {
                     onAcknowledgeClicked()
@@ -63,7 +64,7 @@ fun AlarmScreen(
             modifier = Modifier.height(96.dp).width(204.dp)
         ) {
             Text(
-                text = if (isTimeToScanNfc) "Scan ${if (timerType == TimerType.LUNCH || timerType == TimerType.BREAK) "remote NFC" else "desk NFC"}" else "Acknowledge",
+                text = if (isTimeToScanNfc && isNfcOn) "Scan ${if (timerType == TimerType.LUNCH || timerType == TimerType.BREAK) "remote NFC" else "desk NFC"}" else "Acknowledge",
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold
             )
@@ -75,7 +76,7 @@ fun AlarmScreen(
                 modifier = Modifier.width(204.dp)
             ) {
                 Text(
-                    text = if (timerType == TimerType.BREAK || timerType == TimerType.LUNCH) "Ceebs work" else "I'm in the zone",
+                    text = if (timerType == TimerType.BREAK || timerType == TimerType.LUNCH) "I'm in the zone" else "Snooze",
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold
                 )

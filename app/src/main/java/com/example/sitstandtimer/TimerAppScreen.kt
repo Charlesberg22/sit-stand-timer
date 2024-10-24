@@ -76,10 +76,14 @@ fun TimerApp(
                         navController.navigate(TimerAppScreen.Timer.name)
                     },
                     onSwitchBetweenSitAndStand = {viewModel.setStandingOrSitting()},
+                    onSwitchNfcOff = {viewModel.switchNfcOnAndOff()},
+                    onSwitchBetweenSilentAndNoisy = {viewModel.setSilentOrNoisy()},
                     onSettingsButtonClicked = {
                         navController.navigate(TimerAppScreen.Settings.name)
                     },
                     isStanding = uiState.isStanding,
+                    isNfcOn = uiState.isNfcOn,
+                    isSilentModeOn = uiState.isSilentModeOn,
                     currentTime = uiState.currentTime,
                     modifier = Modifier
                         .fillMaxSize()
@@ -147,6 +151,7 @@ fun TimerApp(
                     },
                     timerType = uiState.timerType,
                     isTimeToScanNfc = uiState.isTimeToScanNFC,
+                    isNfcOn = uiState.isNfcOn,
                     modifier = Modifier
                         .fillMaxSize()
                 )

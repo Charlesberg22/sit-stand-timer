@@ -129,6 +129,22 @@ class TimerViewModel(
         }
     }
 
+    fun switchNfcOnAndOff() {
+        _uiState.update { currentState ->
+            currentState.copy(
+                isNfcOn = !_uiState.value.isNfcOn
+            )
+        }
+    }
+
+    fun setSilentOrNoisy() {
+        _uiState.update { currentState ->
+            currentState.copy(
+                isSilentModeOn = !_uiState.value.isSilentModeOn
+            )
+        }
+    }
+
     fun swapTimerType() {
         timerRepository.stopTimerRunningNotification()
         if (_uiState.value.timerType == TimerType.SIT || _uiState.value.timerType == TimerType.STAND) {
@@ -174,6 +190,12 @@ class TimerViewModel(
         _uiState.update { currentState ->
             currentState.copy(
                 onSnooze = true,
+                timerType =
+                    if (_uiState.value.timerType == TimerType.SIT || _uiState.value.timerType == TimerType.STAND) {
+                        TimerType.BREAK
+                    } else {
+                        if (_uiState.value.isStanding) TimerType.STAND else TimerType.SIT
+                    }
             )
         }
         setTimer()
@@ -193,7 +215,7 @@ class TimerViewModel(
     fun setTimer() {
         timerRepository.stopTimerFinishedNotification()
         val duration: Int =
-            if (uiState.value.onSnooze) {
+            if (_uiState.value.onSnooze) {
                 uiState.value.snoozeLength.toInt() * 60
             } else when (_uiState.value.timerType) {
                 TimerType.STAND, TimerType.SIT -> uiState.value.intervalLength.toInt() * 60
@@ -248,7 +270,7 @@ class TimerViewModel(
                     }
                 }
                 val type = _uiState.value.timerType.name
-                timerRepository.startTimerFinishedNotification(type)
+                timerRepository.startTimerFinishedNotification(type, _uiState.value.isSilentModeOn)
                 navigateToPage("Alarm")
                 endTimer()
             }
@@ -261,7 +283,7 @@ class TimerViewModel(
         _uiState.update { currentState ->
             currentState.copy(
                 minutesRemaining =
-                if (uiState.value.onSnooze) {
+                if (_uiState.value.onSnooze) {
                     uiState.value.snoozeLength.toInt().toString()
                 } else when (_uiState.value.timerType) {
                     TimerType.SIT, TimerType.STAND -> uiState.value.intervalLength.toInt().toString()
@@ -276,7 +298,7 @@ class TimerViewModel(
         timerRepository.startTimerRunningNotification(type)
     }
 
-    // fully resets the timer and uistate when end day is pressed
+    // fully resets the timer and UiState when end day is pressed
     fun resetTimer() {
         timerHelper?.reset()
         _uiState.update { currentState ->
@@ -287,11 +309,13 @@ class TimerViewModel(
                 isTimeToScanNFC = false,
                 hadLunch = false,
                 isStanding = true,
-                timerType = TimerType.STAND
+                timerType = TimerType.STAND,
+                onSnooze = false
             )
         }
         timerRepository.cancelWorker(TIMER_RUNNING_TAG)
         timerRepository.stopTimerRunningNotification()
+        timerRepository.stopTimerFinishedNotification()
     }
 
     // for use with the end of timer running

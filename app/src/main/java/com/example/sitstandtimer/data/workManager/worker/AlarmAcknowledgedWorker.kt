@@ -6,13 +6,15 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.example.sitstandtimer.utils.MediaPlayerHelper
 import com.example.sitstandtimer.utils.TimerNotificationHelper
+import com.example.sitstandtimer.utils.VibrationHelper
 import kotlin.coroutines.cancellation.CancellationException
 
 class AlarmAcknowledgedWorker(
     context: Context,
     workerParameters: WorkerParameters,
     private val timerNotificationHelper: TimerNotificationHelper,
-    private val mediaPlayerHelper: MediaPlayerHelper
+    private val mediaPlayerHelper: MediaPlayerHelper,
+    private val vibrationHelper: VibrationHelper
 ) : CoroutineWorker(context, workerParameters) {
 
     @SuppressLint("MissingPermission")
@@ -21,6 +23,7 @@ class AlarmAcknowledgedWorker(
 
             timerNotificationHelper.removeTimerFinishedNotification()
             mediaPlayerHelper.release()
+            vibrationHelper.release()
 
 
             Result.success()

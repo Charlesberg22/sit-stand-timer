@@ -37,9 +37,10 @@ class WorkManagerTimerRepository(context: Context) : TimerRepository {
         )
     }
 
-    override fun startTimerFinishedNotification(type: String) {
+    override fun startTimerFinishedNotification(type: String, isSilent: Boolean) {
         val data = Data.Builder()
-        data.putString(TimerRunningWorker.typeKey, type)
+        data.putString(TimerFinishedWorker.typeKey, type)
+        data.putBoolean(TimerFinishedWorker.silentKey, isSilent)
 
 
         // add work request

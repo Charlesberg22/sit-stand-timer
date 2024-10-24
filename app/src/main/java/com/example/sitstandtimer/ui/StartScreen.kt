@@ -5,10 +5,15 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -22,8 +27,12 @@ import androidx.compose.ui.unit.dp
 fun StartScreen(
     onStartButtonClicked: () -> Unit,
     onSwitchBetweenSitAndStand: (Boolean) -> Unit,
+    onSwitchNfcOff: (Boolean) -> Unit,
+    onSwitchBetweenSilentAndNoisy: (Boolean) -> Unit,
     onSettingsButtonClicked: () -> Unit,
     isStanding: Boolean,
+    isNfcOn: Boolean,
+    isSilentModeOn: Boolean,
     currentTime: String,
     modifier: Modifier = Modifier
 ) {
@@ -65,6 +74,74 @@ fun StartScreen(
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.weight(1f),
                 textAlign = TextAlign.End
+            )
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Start,
+            modifier = Modifier.width(220.dp)
+        ) {
+            Text(
+                text = "Use NFC",
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.weight(1f),
+                textAlign = TextAlign.Start
+            )
+            Switch(
+                checked = isNfcOn,
+                onCheckedChange = onSwitchNfcOff,
+                thumbContent = if (isNfcOn) {
+                    {
+                        Icon(
+                            imageVector = Icons.Filled.Check,
+                            contentDescription = null,
+                            modifier = Modifier.size(SwitchDefaults.IconSize),
+                        )
+                    }
+                } else {
+                    null
+                },
+                modifier = Modifier.weight(1f)
+            )
+            Text(
+                text = "",
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.weight(1f)
+            )
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Start,
+            modifier = Modifier.width(220.dp)
+        ) {
+            Text(
+                text = "Silent",
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.weight(1f),
+                textAlign = TextAlign.Start
+            )
+            Switch(
+                checked = isSilentModeOn,
+                onCheckedChange = onSwitchBetweenSilentAndNoisy,
+                thumbContent = if (isSilentModeOn) {
+                    {
+                        Icon(
+                            imageVector = Icons.Filled.Check,
+                            contentDescription = null,
+                            modifier = Modifier.size(SwitchDefaults.IconSize),
+                        )
+                    }
+                } else {
+                    null
+                },
+                modifier = Modifier.weight(1f)
+            )
+            Text(
+                text = "",
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.weight(1f)
             )
         }
         Spacer(modifier = Modifier.weight(1f))
