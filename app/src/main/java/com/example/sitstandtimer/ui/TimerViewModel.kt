@@ -130,11 +130,12 @@ class TimerViewModel(
     }
 
     fun switchNfcOnAndOff() {
-        if (uiState.value.remoteNfcTag != "" && uiState.value.deskNfcTag != "")
-        _uiState.update { currentState ->
-            currentState.copy(
-                isNfcOn = !_uiState.value.isNfcOn
-            )
+        if (uiState.value.remoteNfcTag != "" && uiState.value.deskNfcTag != "") {
+            _uiState.update { currentState ->
+                currentState.copy(
+                    isNfcOn = !_uiState.value.isNfcOn
+                )
+            }
         }
     }
 
