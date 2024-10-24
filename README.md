@@ -15,6 +15,6 @@ Primarily, the app is built using Jetpack Compose, with display logic in the Vie
 
 ### Background ###
 
-I made this app as my first experience with programming, after completing CS50 (this will be used as a the final project for it) and the Android Basics with Compose course.
+I made this app as my first real program, after completing CS50 (this will be used as a the final project for it) and the Android Basics with Compose course.
 
 There are undoubtedly some shortcomings, but it was made mostly as a learning experience and because I wanted to use the app myself. If you find said shortcomings, feel free to let me know.
