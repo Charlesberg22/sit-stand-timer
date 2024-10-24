@@ -4,7 +4,7 @@ This is a timer to be used for your work day, which will send a pushy reminder i
 
 For every few timers (defaults to two), it will require you to get up from your desk and scan a remote NFC tag to stop the alarm and start a break timer. On completion of the break timer you will need to scan your desk NFC tag to return to the sit/stand intervals.
 
-NFC is turned on by default, however you will need to set the NFC tags in the settings.
+NFC is turned off by default, so you will need to set the NFC tags in the settings to enable it.
 Additionally, there is a silent mode which just has vibration for the alarms. 
 
 It is intended that while WFH, one would have NFC turned on and silent mode off, and vice versa in an office setting...
