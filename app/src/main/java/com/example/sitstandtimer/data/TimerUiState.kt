@@ -11,7 +11,7 @@ data class TimerUiState (
     val snoozeLength: Float = 15F,
     val remoteNfcTag: String = "",
     val deskNfcTag: String = "",
-    val isNfcOn: Boolean = true,
+    val isNfcOn: Boolean = false,
     val isSilentModeOn: Boolean = false,
 
 
