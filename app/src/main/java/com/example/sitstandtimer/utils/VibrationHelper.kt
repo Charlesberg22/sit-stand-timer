@@ -7,6 +7,7 @@ import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
 
+@Suppress("DEPRECATION")
 class VibrationHelper(private val applicationContext: Context) {
     private var vibrator: Vibrator? = null
 
