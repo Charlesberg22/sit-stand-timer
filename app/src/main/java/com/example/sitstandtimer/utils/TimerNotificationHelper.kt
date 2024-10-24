@@ -9,7 +9,6 @@ import android.content.Intent
 import android.os.Build
 import android.os.PowerManager
 import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import androidx.core.net.toUri
 import com.example.sitstandtimer.MainActivity
 import com.example.sitstandtimer.R
@@ -106,7 +105,7 @@ class TimerNotificationHelper(
         pendingIntentFlags
     )
 
-    private fun timerFinishedBuilder(type: String?) =
+    fun timerFinishedBuilder(type: String?) =
         NotificationCompat.Builder(applicationContext, TIMER_FINISHED_CHANNEL)
             .setContentTitle(
                 when (type) {
@@ -122,11 +121,12 @@ class TimerNotificationHelper(
             .setCategory(NotificationCompat.CATEGORY_ALARM)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setOngoing(true)
+            .build()
 
-    @SuppressLint("MissingPermission")
-    fun showTimerFinishedNotification(type: String?) {
-        NotificationManagerCompat.from(applicationContext).notify(TIMER_FINISHED_NOTIFICATION_ID, timerFinishedBuilder(type).build())
-    }
+//    @SuppressLint("MissingPermission")
+//    fun showTimerFinishedNotification(type: String?) {
+//        NotificationManagerCompat.from(applicationContext).notify(TIMER_FINISHED_NOTIFICATION_ID, timerFinishedBuilder(type).build())
+//    }
 
     @SuppressLint("Wakelock")
     fun wakeScreenWhenTimerFinished() {

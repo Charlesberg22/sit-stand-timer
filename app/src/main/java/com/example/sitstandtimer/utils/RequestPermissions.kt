@@ -33,7 +33,7 @@ fun RequestPermissions() {
             icon = { Icon(Icons.Filled.NotificationsActive, contentDescription = null) },
             title = {
                 Text(
-                    text = "Notifications permission",
+                    text = "Allow notifications permission",
                     style = MaterialTheme.typography.headlineSmall,
                 )
             },

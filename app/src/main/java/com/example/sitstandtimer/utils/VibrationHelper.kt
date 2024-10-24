@@ -24,9 +24,9 @@ class VibrationHelper(private val applicationContext: Context) {
     fun start() {
         val pattern = longArrayOf(0, 250, 500, 750, 1000)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            vibrator?.vibrate(VibrationEffect.createWaveform(pattern, 3))
+            vibrator?.vibrate(VibrationEffect.createWaveform(pattern, 0))
         } else {
-            vibrator?.vibrate(pattern, 3)
+            vibrator?.vibrate(pattern, 0)
         }
     }
 

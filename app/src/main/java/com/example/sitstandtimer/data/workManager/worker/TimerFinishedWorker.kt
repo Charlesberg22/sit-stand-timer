@@ -2,10 +2,13 @@ package com.example.sitstandtimer.data.workManager.worker
 
 import android.content.Context
 import androidx.work.CoroutineWorker
+import androidx.work.ForegroundInfo
 import androidx.work.WorkerParameters
 import com.example.sitstandtimer.utils.MediaPlayerHelper
+import com.example.sitstandtimer.utils.TIMER_FINISHED_NOTIFICATION_ID
 import com.example.sitstandtimer.utils.TimerNotificationHelper
 import com.example.sitstandtimer.utils.VibrationHelper
+import kotlinx.coroutines.delay
 import kotlin.coroutines.cancellation.CancellationException
 
 class TimerFinishedWorker(
@@ -18,6 +21,13 @@ class TimerFinishedWorker(
 
     override suspend fun doWork(): Result {
         return try {
+
+            val timerType = inputData.getString(typeKey)
+
+            val notification = timerNotificationHelper.timerFinishedBuilder(timerType)
+
+            setForeground(ForegroundInfo(TIMER_FINISHED_NOTIFICATION_ID, notification))
+
             if (inputData.getBoolean(silentKey, false)) {
                 vibrationHelper.prepare()
                 vibrationHelper.start()
@@ -26,10 +36,12 @@ class TimerFinishedWorker(
                 mediaPlayerHelper.start()
             }
 
-            val timerType = inputData.getString(typeKey)
-
-            timerNotificationHelper.showTimerFinishedNotification(timerType)
             timerNotificationHelper.wakeScreenWhenTimerFinished()
+
+            // only show the notification for 60 seconds
+            delay(1000 * 60 )
+            vibrationHelper.release()
+            mediaPlayerHelper.release()
 
             Result.success()
         } catch (e: CancellationException) {
