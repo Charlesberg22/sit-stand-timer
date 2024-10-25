@@ -19,14 +19,14 @@ class TimerFinishedWorker(
     private val vibrationHelper: VibrationHelper
 ) : CoroutineWorker(context, workerParameters) {
 
+    override suspend fun getForegroundInfo(): ForegroundInfo {
+        val type = inputData.getString(typeKey)
+        val notification = timerNotificationHelper.timerFinishedBuilder(type)
+        return ForegroundInfo(TIMER_FINISHED_NOTIFICATION_ID, notification)
+    }
+
     override suspend fun doWork(): Result {
         return try {
-
-            val timerType = inputData.getString(typeKey)
-
-            val notification = timerNotificationHelper.timerFinishedBuilder(timerType)
-
-            setForeground(ForegroundInfo(TIMER_FINISHED_NOTIFICATION_ID, notification))
 
             if (inputData.getBoolean(silentKey, false)) {
                 vibrationHelper.prepare()
