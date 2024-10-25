@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.sitstandtimer.TimerApplication
+import com.example.sitstandtimer.data.NfcTagLocation
 import com.example.sitstandtimer.data.TimerRepository
 import com.example.sitstandtimer.data.TimerType
 import com.example.sitstandtimer.data.TimerUiState
@@ -80,21 +81,15 @@ class TimerViewModel(
         _navigateTo.value = null
     }
 
-    fun saveNfcTag(tag: String, location: String = "remote") {
+    fun saveNfcTag(tag: String, location: NfcTagLocation) {
         viewModelScope.launch {
             userPreferenceRepository.saveRemoteNfcTag(tag, location)
         }
-        if (location == "desk") {
-            _uiState.update { currentState ->
-                currentState.copy(
-                    deskNfcTag = tag
-                )
-            }
-        } else {
-            _uiState.update { currentState ->
-                currentState.copy(
-                    remoteNfcTag = tag
-                )
+
+        _uiState.update { currentState ->
+            when (location) {
+                NfcTagLocation.DESK -> currentState.copy(deskNfcTag = tag)
+                NfcTagLocation.REMOTE -> currentState.copy(remoteNfcTag = tag)
             }
         }
     }
