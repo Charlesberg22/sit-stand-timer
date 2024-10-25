@@ -13,6 +13,7 @@ import com.example.sitstandtimer.data.TimerRepository
 import com.example.sitstandtimer.data.TimerType
 import com.example.sitstandtimer.data.TimerUiState
 import com.example.sitstandtimer.data.UserPreferenceRepository
+import com.example.sitstandtimer.data.workManager.worker.TIMER_FINISHED_TAG
 import com.example.sitstandtimer.data.workManager.worker.TIMER_RUNNING_TAG
 import com.example.sitstandtimer.utils.TimerHelper
 import com.example.sitstandtimer.utils.combine
@@ -215,6 +216,7 @@ class TimerViewModel(
     private var timerHelper: TimerHelper? = null
 
     fun setTimer() {
+        timerRepository.cancelWorker(TIMER_FINISHED_TAG)
         timerRepository.stopTimerFinishedNotification()
         val duration: Int =
             if (_uiState.value.onSnooze) {
@@ -316,6 +318,7 @@ class TimerViewModel(
             )
         }
         timerRepository.cancelWorker(TIMER_RUNNING_TAG)
+        timerRepository.cancelWorker(TIMER_FINISHED_TAG)
         timerRepository.stopTimerRunningNotification()
         timerRepository.stopTimerFinishedNotification()
     }

@@ -16,15 +16,16 @@ class TimerRunningWorker(
     private val timerNotificationHelper: TimerNotificationHelper
 ) : CoroutineWorker(context, workerParameters) {
 
+    override suspend fun getForegroundInfo(): ForegroundInfo {
+        val type = inputData.getString(typeKey)
+        val notification = timerNotificationHelper.timerRunningBuilder(type)
+        return ForegroundInfo(TIMER_RUNNING_NOTIFICATION_ID, notification)
+    }
+
     @SuppressLint("MissingPermission")
     override suspend fun doWork(): Result {
         return try {
-
-            val type = inputData.getString(typeKey)
-
-            val notification = timerNotificationHelper.timerRunningBuilder(type)
-
-            setForeground(ForegroundInfo(TIMER_RUNNING_NOTIFICATION_ID, notification))
+            setForeground(getForegroundInfo())
 
             delay(60 * 60 * 1000)
 
