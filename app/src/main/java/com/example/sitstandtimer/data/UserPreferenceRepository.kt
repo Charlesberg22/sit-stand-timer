@@ -41,12 +41,12 @@ class UserPreferenceRepository(
         key: Preferences.Key<T>,
         defaultValue: T
     ): Flow<T> = this
-        .catch { exception ->
-            if (exception is IOException) {
-                Log.e(TAG, "Error reading preferences.", exception)
+        .catch {
+            if (it is IOException) {
+                Log.e(TAG, "Error reading preferences.", it)
                 emit(emptyPreferences())
             } else {
-                throw exception
+                throw it
             }
         }
         .map { preferences ->
