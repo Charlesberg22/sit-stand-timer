@@ -1,6 +1,8 @@
 package com.example.sitstandtimer.data.workManager.worker
 
 import android.content.Context
+import android.content.pm.ServiceInfo
+import android.os.Build
 import androidx.work.CoroutineWorker
 import androidx.work.ForegroundInfo
 import androidx.work.WorkerParameters
@@ -22,12 +24,12 @@ class TimerFinishedWorker(
     override suspend fun getForegroundInfo(): ForegroundInfo {
         val type = inputData.getString(typeKey)
         val notification = timerNotificationHelper.timerFinishedBuilder(type)
-        return ForegroundInfo(TIMER_FINISHED_NOTIFICATION_ID, notification)
+        val foregroundServiceType = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK else 0
+        return ForegroundInfo(TIMER_FINISHED_NOTIFICATION_ID, notification, foregroundServiceType)
     }
 
     override suspend fun doWork(): Result {
         return try {
-
 
             if (inputData.getBoolean(silentKey, false)) {
                 vibrationHelper.prepare()

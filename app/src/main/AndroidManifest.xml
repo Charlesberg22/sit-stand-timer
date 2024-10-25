@@ -47,7 +47,7 @@
                 android:value="androidx.startup"
                 tools:node="remove" />
         </provider>
-        <service android:name="androidx.work.impl.foreground.SystemForegroundService" android:foregroundServiceType="mediaPlayback" tools:node="merge" />
+        <service android:name="androidx.work.impl.foreground.SystemForegroundService" android:foregroundServiceType="mediaPlayback" android:exported="false" tools:node="merge" />
     </application>
 
 </manifest>
