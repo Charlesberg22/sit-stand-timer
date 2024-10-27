@@ -94,8 +94,8 @@ class TimerViewModel(
         }
     }
 
-    fun isTagStored(tag: String, location: String = "remote"): Boolean {
-        return if (location == "desk") {
+    fun isTagStored(tag: String, location: NfcTagLocation): Boolean {
+        return if (location == NfcTagLocation.DESK) {
             uiState.value.deskNfcTag == tag
         } else {
             uiState.value.remoteNfcTag == tag
@@ -145,6 +145,7 @@ class TimerViewModel(
 
     fun swapTimerType() {
         timerRepository.stopTimerRunningNotification()
+        timerRepository.cancelWorker(TIMER_RUNNING_TAG)
         if (_uiState.value.timerType == TimerType.SIT || _uiState.value.timerType == TimerType.STAND) {
             setStandingOrSitting()
             timerRepository.startTimerRunningNotification(_uiState.value.timerType.name)

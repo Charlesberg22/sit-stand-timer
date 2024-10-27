@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.sitstandtimer.data.NfcTagLocation
 import com.example.sitstandtimer.data.TimerType
 import com.example.sitstandtimer.utils.NfcBroadcastReceiver
 
@@ -118,7 +119,7 @@ fun AlarmScreen(
                 onDialogDismiss = { showNfcDialog = false },
                 onAcknowledgeClicked = onAcknowledgeClicked,
                 isTagStored = isTagStored,
-                location = if (timerType == TimerType.LUNCH || timerType == TimerType.BREAK) "remote" else "desk"
+                location = if (timerType == TimerType.LUNCH || timerType == TimerType.BREAK) NfcTagLocation.REMOTE else NfcTagLocation.DESK
             )
         }
     }
@@ -130,7 +131,7 @@ fun NfcDialogContent(
     onDialogDismiss: () -> Unit,
     onAcknowledgeClicked: () -> Unit,
     isTagStored: (String) -> Boolean,
-    location: String
+    location: NfcTagLocation
 ) {
     var isTagCorrect: Boolean? by rememberSaveable { mutableStateOf(null) }
 
@@ -140,7 +141,11 @@ fun NfcDialogContent(
     AlertDialog(
         onDismissRequest = { onDialogDismiss() },
         confirmButton = {},
-        title = { Text("Scan ${if (location == "remote") "remote" else "desk"} NFC Tag")},
+        title = {
+            Text(
+                "Scan ${if (location == NfcTagLocation.REMOTE) "remote" else "desk"} NFC Tag",
+                style = MaterialTheme.typography.titleLarge,
+            )},
         text = { Text(
             if (isTagCorrect != null) {
                 if (isTagCorrect as Boolean) "This tag matches" else "This tag does not match"

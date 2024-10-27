@@ -17,6 +17,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navDeepLink
+import com.example.sitstandtimer.data.NfcTagLocation
 import com.example.sitstandtimer.data.TimerType
 import com.example.sitstandtimer.ui.AlarmScreen
 import com.example.sitstandtimer.ui.SettingsScreen
@@ -140,7 +141,7 @@ fun TimerApp(
                     isTagStored = {
                         viewModel.isTagStored(
                             tag = it,
-                            location = if (uiState.timerType == TimerType.LUNCH || uiState.timerType == TimerType.BREAK) "remote" else "desk",
+                            location = if (uiState.timerType == TimerType.LUNCH || uiState.timerType == TimerType.BREAK) NfcTagLocation.REMOTE else NfcTagLocation.DESK,
                         )
                     },
                     timerType = uiState.timerType,

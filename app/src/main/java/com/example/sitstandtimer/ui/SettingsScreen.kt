@@ -10,7 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
@@ -51,7 +51,7 @@ fun SettingsScreen(
     ) {
         IconButton(onClick = onBackButtonClick) {
             Icon(
-                imageVector = Icons.Filled.ArrowBack,
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = "back button"
             )
         }
@@ -156,7 +156,7 @@ fun SettingsScreen(
                 isTagStored = {
                     viewModel.isTagStored(
                         tag = it,
-                        location = if (setRemoteOrDeskNfc) "remote" else "desk"
+                        location = if (setRemoteOrDeskNfc) NfcTagLocation.REMOTE else NfcTagLocation.DESK
                     )},
             )
         }
@@ -260,7 +260,7 @@ fun NfcSetDialogContent(
     AlertDialog(
         onDismissRequest = { onDialogDismiss() },
         confirmButton = {},
-        title = { Text("Scan NFC Tag")},
+        title = { Text(text = "Scan NFC Tag", style = MaterialTheme.typography.titleLarge)},
         text = { Text(nfcTag) }
     )
 }
@@ -280,7 +280,7 @@ fun NfcCheckDialogContent(
     AlertDialog(
         onDismissRequest = { onDialogDismiss() },
         confirmButton = {},
-        title = { Text("Check NFC Tag")},
+        title = { Text("Check NFC Tag", style = MaterialTheme.typography.titleLarge)},
         text = { Text(
             if (isTagCorrect != null) {
                 if (isTagCorrect as Boolean) "This tag matches" else "This tag does not match"

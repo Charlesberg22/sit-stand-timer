@@ -15,7 +15,7 @@ import com.example.sitstandtimer.utils.VibrationHelper
 class TimerWorkerFactory(
     private val timerNotificationHelper: TimerNotificationHelper,
     private val mediaPlayerHelper: MediaPlayerHelper,
-    private val vibrationHelper: VibrationHelper
+    private val vibrationHelper: VibrationHelper,
 ) : WorkerFactory() {
 
     override fun createWorker(

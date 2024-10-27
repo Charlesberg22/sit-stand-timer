@@ -15,7 +15,7 @@ import kotlinx.coroutines.delay
 class TimerRunningWorker(
     context: Context,
     workerParameters: WorkerParameters,
-    private val timerNotificationHelper: TimerNotificationHelper
+    private val timerNotificationHelper: TimerNotificationHelper,
 ) : CoroutineWorker(context, workerParameters) {
 
     override suspend fun getForegroundInfo(): ForegroundInfo {
@@ -30,6 +30,7 @@ class TimerRunningWorker(
         return try {
             setForeground(getForegroundInfo())
 
+            // Maximum length of one hour, cancelled when timer is done
             delay(60 * 60 * 1000)
 
             Result.success()
