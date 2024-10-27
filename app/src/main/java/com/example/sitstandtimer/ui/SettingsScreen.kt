@@ -28,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.example.sitstandtimer.data.NfcTagLocation
 import com.example.sitstandtimer.data.TimerUiState
 import com.example.sitstandtimer.utils.NfcBroadcastReceiver
 
@@ -139,7 +140,7 @@ fun SettingsScreen(
                 saveNfcTag = {
                     viewModel.saveNfcTag(
                         tag = it,
-                        location = if (setRemoteOrDeskNfc) "remote" else "desk"
+                        location = if (setRemoteOrDeskNfc) NfcTagLocation.REMOTE else NfcTagLocation.DESK
                     )},
                 nfcTag =
                     if (setRemoteOrDeskNfc) {
