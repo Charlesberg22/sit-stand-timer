@@ -11,6 +11,8 @@ It is intended that while WFH, one would have NFC turned on and silent mode off,
 
 All the timer lengths can be set in settings, and these are saved in a DataStore.
 
+*Please allow background activity in your app settings for timer finished notifications to operate as expected on Android 12+*
+
 ### Background ###
 
 I made this app as my first real program, after completing CS50 (this will be used as a the final project for it) and the Android Basics with Compose course.
