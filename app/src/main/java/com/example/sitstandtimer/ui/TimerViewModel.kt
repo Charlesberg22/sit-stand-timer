@@ -178,7 +178,10 @@ class TimerViewModel(
         _uiState.update { currentState ->
             currentState.copy(
                 timerType = TimerType.LUNCH,
-                hadLunch = true
+                hadLunch = true,
+                isStanding = true,
+                intervalsRemaining = uiState.value.numberOfIntervals,
+                onSnooze = false
             )
         }
         setTimer()
