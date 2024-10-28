@@ -153,7 +153,8 @@ class TimerViewModel(
             endTimer()
             _uiState.update { currentState ->
                 currentState.copy(
-                    timerType = if (_uiState.value.isStanding) TimerType.STAND else TimerType.SIT
+                    timerType = if (_uiState.value.isStanding) TimerType.STAND else TimerType.SIT,
+                    onSnooze = false
                 )
             }
             setTimer()
