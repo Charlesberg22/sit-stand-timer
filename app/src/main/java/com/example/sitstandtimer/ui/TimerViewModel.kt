@@ -167,7 +167,8 @@ class TimerViewModel(
         endTimer()
         _uiState.update { currentState ->
             currentState.copy(
-                timerType = TimerType.BREAK
+                timerType = TimerType.BREAK,
+                onSnooze = false,
             )
         }
         setTimer()
@@ -198,7 +199,8 @@ class TimerViewModel(
                         TimerType.BREAK
                     } else {
                         if (_uiState.value.isStanding) TimerType.STAND else TimerType.SIT
-                    }
+                    },
+                intervalsRemaining = if (_uiState.value.timerType == TimerType.BREAK) 1 else _uiState.value.intervalsRemaining,
             )
         }
         setTimer()
