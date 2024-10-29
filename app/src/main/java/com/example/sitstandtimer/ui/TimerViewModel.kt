@@ -169,6 +169,7 @@ class TimerViewModel(
             currentState.copy(
                 timerType = TimerType.BREAK,
                 onSnooze = false,
+                intervalsRemaining = uiState.value.numberOfIntervals
             )
         }
         setTimer()
