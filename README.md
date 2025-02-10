@@ -15,7 +15,7 @@ All the timer lengths can be set in settings, and these are saved in a DataStore
 
 ### Background ###
 
-I made this app as my first real program, after completing CS50 (this will be used as a the final project for it) and the Android Basics with Compose course.
+I made this app as my first real program, after completing CS50 (this is the final project for it) and the Android Basics with Compose course.
 
 There are undoubtedly some shortcomings, but it was made mostly as a learning experience and because I wanted to use the app myself. If you find said shortcomings, feel free to let me know.
 
