@@ -15,14 +15,25 @@ All the timer lengths can be set in settings, and these are saved in a DataStore
 
 ## Design ##
 The welcome page provides daily options as well as a link to the permanent settings page.
-![Welcome page](docs/Welcome.jpg) ![Settings page](docs/Settings.jpg)
+<p align="middle">
+  <img src="docs/Welcome.jpg" alt="Welcome page" width="35%">
+  <img src="docs/Settings.jpg" alt="Settings page" width="35%">
+</p>
 
 The timer running page changes based on the context of the timer, i.e. whether it is time to sit/stand, take lunch, or take a break. As well as whether it is pre- or post-lunch.
 A persistent notification is present while the timer is running, which is also context dependent.
-![Standing timer before lunch](docs/Standing-pre-lunch.jpg) ![Lunch timer](docs/Lunch.jpg) ![Break timer](docs/Break.jpg) ![Standing timer after lunch](docs/Standing-post-lunch.jpg)
+<p align="middle">
+  <img src="docs/Standing-pre-lunch.jpg" alt="Standing timer before lunch" width="20%">
+  <img src="docs/Lunch.jpg" alt="Lunch timer" width="20%">
+  <img src="docs/Break.jpg" alt="Break timer" width="20%">
+  <img src="docs/Standing-post-lunch.jpg" alt="Standing timer after lunch" width="20%">
+</p>
 
 The alarm page is also timer-dependent and will tell the user to return to work or take a break, and will ask them to scan the relevant NFC tag if the NFC setting is used, or acknowledge the alarm otherwise.
-![Alarm page](docs/Alarm.jpg) ![NFC Scan pop-up](docs/Scan-NFC.jpg)
+<p align="middle">
+  <img src="docs/Alarm.jpg" alt="Alarm page" width="35%">
+  <img src="docs/Scan-NFC.jpg" alt="NFC Scan pop-up" width="35%">
+</p>
 
 ### Background ###
 
